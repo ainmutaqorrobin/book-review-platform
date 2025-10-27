@@ -1,6 +1,7 @@
-import { Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { param } from "express-validator";
 import { handleValidation } from "../middlewares/validateRequest";
+import { NotFoundError } from "../utils/notfoundError";
 
 const router = Router();
 
@@ -21,11 +22,12 @@ router.get(
       .withMessage("Book ID must be a positive integer"),
   ],
   handleValidation,
-  (req: Request, res: Response) => {
+  (req: Request, res: Response, next: NextFunction) => {
     const bookId = Number(req.params.id);
     const book = books.find((b) => b.id === bookId);
 
-    if (!book) return res.status(404).json({ message: "Book not found" });
+    if (!book)
+      return next(new NotFoundError(`Book with ID ${bookId} not found`));
 
     res.json(book);
   }
