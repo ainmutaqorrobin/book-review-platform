@@ -26,10 +26,9 @@ router.get(
     const bookId = Number(req.params.id);
     const book = books.find((b) => b.id === bookId);
 
-    if (!book)
-      return next(new NotFoundError(`Book with ID ${bookId} not found`));
+    if (!book) throw new NotFoundError(`Book with ID ${bookId} not found`);
 
-    res.json(book);
+    return res.json(book);
   }
 );
 
