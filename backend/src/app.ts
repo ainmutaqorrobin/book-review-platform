@@ -5,6 +5,7 @@ import { json } from "body-parser";
 import { BookRouter } from "./routes/book";
 import { errorHandler } from "./middlewares/errorHandler";
 import { AppError } from "./utils/appError";
+import pool from "./config/db";
 
 dotenv.config();
 
@@ -19,6 +20,11 @@ app.get("/", (req, res) => {
 });
 
 app.use("/books", BookRouter);
+
+app.get("/database", async (req, res) => {
+  const result = await pool.query("SELECT NOW() as current_time");
+  res.json({ db_connected: true, time: result.rows[0].current_time });
+});
 
 app.all(/.*/, async (req, res, next) => {
   throw new AppError(`Route ${req.originalUrl} not found`, 404);
