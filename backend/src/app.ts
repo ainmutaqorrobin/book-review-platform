@@ -4,7 +4,7 @@ import cors from "cors";
 import { json } from "body-parser";
 import { BookRouter } from "./routes/book";
 import { errorHandler } from "./middlewares/errorHandler";
-import { AppError } from "./utils/AppError";
+import { AppError } from "./utils/appError";
 
 dotenv.config();
 
