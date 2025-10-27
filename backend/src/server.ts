@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 import cors from "cors";
 import { json } from "body-parser";
 import { BookRouter } from "./routes/book";
+import { errorHandler } from "./middlewares/errorHandler";
+import { AppError } from "./utils/AppError";
 
 dotenv.config();
 
@@ -17,6 +19,12 @@ app.get("/", (req, res) => {
 });
 
 app.use("/books", BookRouter);
+
+app.all(/.*/, async (req, res, next) => {
+  throw new AppError(`Route ${req.originalUrl} not found`, 404);
+});
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
