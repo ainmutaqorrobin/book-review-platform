@@ -1,4 +1,6 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
+import { param } from "express-validator";
+import { handleValidation } from "../middlewares/validateRequest";
 
 const router = Router();
 
@@ -11,11 +13,22 @@ router.get("/", (req, res) => {
   res.json(books);
 });
 
-router.get("/:id", (req, res) => {
-  const book = books.find((b) => b.id === Number(req.params.id));
-  if (!book) return res.status(404).json({ message: "Book not found" });
+router.get(
+  "/:id",
+  [
+    param("id")
+      .isInt({ min: 1 })
+      .withMessage("Book ID must be a positive integer"),
+  ],
+  handleValidation,
+  (req: Request, res: Response) => {
+    const bookId = Number(req.params.id);
+    const book = books.find((b) => b.id === bookId);
 
-  res.json(book);
-});
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
+    res.json(book);
+  }
+);
 
 export { router as BookRouter };
