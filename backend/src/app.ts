@@ -6,6 +6,7 @@ import { BookRouter } from "./routes/book";
 import { errorHandler } from "./middlewares/errorHandler";
 import { AppError } from "./utils/appError";
 import pool from "./config/db";
+import { ReviewRouter } from "./routes/review";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/books", BookRouter);
+app.use("/reviews", ReviewRouter);
 
 app.get("/database", async (req, res) => {
   const result = await pool.query("SELECT NOW() as current_time");
