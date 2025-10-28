@@ -29,6 +29,7 @@ export const getBook = async (
 ) => {
   try {
     const book = await getBookById(Number(req.params.id));
+
     if (!book)
       throw new NotFoundError(`Book with ID ${req.params.id} not found`);
 
@@ -92,9 +93,7 @@ export const deleteSingleBook = async (
     const id = Number(req.params.id);
     const deleted = await deleteBook(id);
 
-    if (!deleted) {
-      return next(new NotFoundError(`Book with ID ${id} not found`));
-    }
+    if (!deleted) throw new NotFoundError(`Book with ID ${id} not found`);
 
     return sendResponse(res, 200, "Book deleted successfully", deleted);
   } catch (err) {
