@@ -20,7 +20,7 @@ const router = Router();
 
 router.get("/", getBooks);
 
-router.get("/:id", getBookValidation, handleValidation, getBook);
+router.get("/:bookId", getBookValidation, handleValidation, getBook);
 
 router.post(
   "/",
@@ -30,21 +30,21 @@ router.post(
 );
 
 router.post(
-  "/:id/reviews",
+  "/:bookId/reviews",
   createBookReviewValidation,
   handleValidation,
   createBookReview
 );
 
 router.put(
-  "/:id",
+  "/:bookId",
   updateSingleBookValidation,
   handleValidation,
   updateSingleBook
 );
 
 router.delete(
-  "/:id",
+  "/:bookId",
   deleteSingleBookValidation,
   handleValidation,
   deleteSingleBook

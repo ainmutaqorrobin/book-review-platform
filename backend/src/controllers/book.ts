@@ -30,10 +30,10 @@ export const getBook = async (
   next: NextFunction
 ) => {
   try {
-    const book = await getBookById(Number(req.params.id));
+    const book = await getBookById(Number(req.params.bookId));
 
     if (!book)
-      throw new NotFoundError(`Book with ID ${req.params.id} not found`);
+      throw new NotFoundError(`Book with ID ${req.params.bookId} not found`);
 
     return sendResponse(res, 200, "Book retrieved successfully", book);
   } catch (err) {
@@ -68,7 +68,7 @@ export const createBookReview = async (
   next: NextFunction
 ) => {
   try {
-    const bookId = Number(req.params.id);
+    const bookId = Number(req.params.bookId);
     const { reviewer_name, text, rating } = req.body;
 
     const book = await pool.query("SELECT id FROM books WHERE id = $1", [
@@ -98,7 +98,7 @@ export const updateSingleBook = async (
   next: NextFunction
 ) => {
   try {
-    const id = Number(req.params.id);
+    const id = Number(req.params.bookId);
     const { title, author, description, cover_image_url } = req.body;
 
     const updated = await updateBook(id, {
@@ -122,7 +122,7 @@ export const deleteSingleBook = async (
   next: NextFunction
 ) => {
   try {
-    const id = Number(req.params.id);
+    const id = Number(req.params.bookId);
     const deleted = await deleteBook(id);
 
     if (!deleted) throw new NotFoundError(`Book with ID ${id} not found`);

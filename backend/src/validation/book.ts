@@ -1,7 +1,7 @@
 import { body, param } from "express-validator";
 
 export const getBookValidation = [
-  param("id")
+  param("bookId")
     .isInt({ min: 1 })
     .withMessage("Book ID must be a positive integer"),
 ];
@@ -18,7 +18,7 @@ export const createSingleBookValidation = [
 ];
 
 export const createBookReviewValidation = [
-  param("id")
+  param("bookId")
     .isInt({ min: 1 })
     .withMessage("Book ID must be a positive integer"),
   body("reviewer_name")
@@ -32,7 +32,7 @@ export const createBookReviewValidation = [
 ];
 
 export const updateSingleBookValidation = [
-  param("id")
+  param("bookId")
     .isInt({ min: 1 })
     .withMessage("Book ID must be a positive integer"),
   body("title")
@@ -50,7 +50,7 @@ export const updateSingleBookValidation = [
 ];
 
 export const deleteSingleBookValidation = [
-  param("id")
+  param("bookId")
     .isInt({ min: 1 })
     .withMessage("Book ID must be a positive integer"),
 ];
