@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { handleValidation } from "../middlewares/validateRequest";
 import {
+  createBookReview,
   createSingleBook,
   deleteSingleBook,
   getBook,
@@ -8,6 +9,7 @@ import {
   updateSingleBook,
 } from "../controllers/book";
 import {
+  createBookReviewValidation,
   createSingleBookValidation,
   deleteSingleBookValidation,
   getBookValidation,
@@ -25,6 +27,13 @@ router.post(
   createSingleBookValidation,
   handleValidation,
   createSingleBook
+);
+
+router.post(
+  "/:id/reviews",
+  createBookReviewValidation,
+  handleValidation,
+  createBookReview
 );
 
 router.put(

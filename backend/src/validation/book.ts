@@ -17,6 +17,20 @@ export const createSingleBookValidation = [
     .withMessage("Author is required and cannot be empty"),
 ];
 
+export const createBookReviewValidation = [
+  param("id")
+    .isInt({ min: 1 })
+    .withMessage("Book ID must be a positive integer"),
+  body("reviewer_name")
+    .trim()
+    .notEmpty()
+    .withMessage("Reviewer name is required"),
+  body("text").trim().notEmpty().withMessage("Review text cannot be empty"),
+  body("rating")
+    .isInt({ min: 1, max: 5 })
+    .withMessage("Rating must be between 1 and 5"),
+];
+
 export const updateSingleBookValidation = [
   param("id")
     .isInt({ min: 1 })
