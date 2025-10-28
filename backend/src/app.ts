@@ -8,6 +8,7 @@ import { AppError } from "./utils/appError";
 import pool from "./config/db";
 import { ReviewRouter } from "./routes/review";
 import { SearchRouter } from "./routes/search";
+import { globalRateLimiter } from "./middlewares/rateLimiter";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(json());
 
+app.use(globalRateLimiter);
 app.get("/", (req, res) => {
   res.json({ message: "📚 Book Review API is running!!" });
 });
