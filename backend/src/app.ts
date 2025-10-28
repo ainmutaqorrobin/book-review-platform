@@ -1,5 +1,4 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import { json } from "body-parser";
 import { BookRouter } from "./routes/book";
@@ -10,10 +9,7 @@ import { ReviewRouter } from "./routes/review";
 import { SearchRouter } from "./routes/search";
 import { globalRateLimiter } from "./middlewares/rateLimiter";
 
-dotenv.config();
-
 const app = express();
-const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(json());
