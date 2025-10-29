@@ -18,6 +18,8 @@ import {
   Review as ReviewModel,
 } from "@/utils/api/books";
 import { FALLBACK_IMAGE } from "@/utils/const/image";
+import BackButton from "./back-button";
+import { Skeleton } from "../ui/skeleton";
 
 interface BookDetailProps {
   bookId: number;
@@ -50,7 +52,12 @@ export default function BookDetail({ bookId }: BookDetailProps) {
 
   if (loading) {
     return (
-      <div className="p-6 text-center text-gray-500">Loading book details…</div>
+      <div className="space-y-6 p-6">
+        <Skeleton className="w-full h-64 rounded-md" />
+        <Skeleton className="w-3/4 h-8 rounded-md" />
+        <Skeleton className="w-1/2 h-6 rounded-md" />
+        <Skeleton className="w-full h-40 rounded-md" />
+      </div>
     );
   }
 
@@ -74,7 +81,14 @@ export default function BookDetail({ bookId }: BookDetailProps) {
 
   return (
     <>
-      <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 mb-6 flex flex-col">
+      {/* Book Header Section */}
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-3xl font-semibold">{title}</h1>
+        <BackButton />
+      </div>
+
+      {/* Book Card */}
+      <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 mb-8 flex flex-col">
         <div className="relative w-full h-64 overflow-hidden rounded-md">
           <Image
             src={cover_image_url || FALLBACK_IMAGE}
@@ -96,18 +110,23 @@ export default function BookDetail({ bookId }: BookDetailProps) {
             Added on {new Date(created_at || "").toLocaleDateString()}
           </p>
         </CardContent>
-
-        <CardFooter className="flex justify-end px-6 py-4">
-          <Link href="/books" passHref>
-            <Button variant="outline" className="w-auto">
-              Back to list
-            </Button>
-          </Link>
-        </CardFooter>
       </Card>
 
+      {/* Reviews Section Header */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-semibold">Reviews</h2>
+        <Link href={`/books/${id}/review`} passHref>
+          <Button
+            variant="outline"
+            className="w-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          >
+            Add Review
+          </Button>
+        </Link>
+      </div>
+
+      {/* Reviews List */}
       <section>
-        <h2 className="text-xl font-semibold mb-4">Reviews</h2>
         {reviews.length === 0 ? (
           <p className="text-gray-500">No reviews yet.</p>
         ) : (
