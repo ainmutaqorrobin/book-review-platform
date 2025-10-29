@@ -44,12 +44,7 @@ export default function AISection() {
           >
             <CardHeader>
               <CardTitle className="flex items-center justify-center gap-2">
-                <Badge
-                  variant="outline"
-                  className={`bg-${feature.color}-100 text-${feature.color}-800`}
-                >
-                  {feature.title}
-                </Badge>
+                {feature.title}
               </CardTitle>
             </CardHeader>
             <CardContent>

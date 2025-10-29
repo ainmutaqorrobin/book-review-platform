@@ -1,4 +1,4 @@
-import { fetcher } from "@/lib/fetcher";
+import { ApiResponse, fetcher } from "@/lib/fetcher";
 
 export interface Book {
   id: number;
@@ -9,9 +9,30 @@ export interface Book {
   created_at?: string;
 }
 
+export interface Review {
+  id: number;
+  book_id: number;
+  reviewer_name: string;
+  text: string;
+  rating: number;
+  created_at: string;
+  book_title: string;
+}
+
+// For getBooks (list of books only)
+export type BooksListResponse = ApiResponse<Book[]>;
+
+// For search (books + reviews)
+export interface SearchData {
+  books: Book[];
+  reviews: Review[];
+}
+
+export type SearchResponse = ApiResponse<SearchData>;
+
 // Get all books
-export async function getBooks() {
-  return fetcher<Book[]>("/books", {}, []);
+export async function getBooks(): Promise<BooksListResponse> {
+  return fetcher<Book[]>("/books");
 }
 
 // Get one book
@@ -38,4 +59,11 @@ export async function updateBook(id: number, book: Partial<Book>) {
 // Delete book
 export async function deleteBook(id: number) {
   return fetcher<null>(`/books/${id}`, { method: "DELETE" });
+}
+
+// Search book
+export async function searchBooks(query: string): Promise<SearchResponse> {
+  return fetcher<SearchData>("/search", {
+    params: { query },
+  });
 }
