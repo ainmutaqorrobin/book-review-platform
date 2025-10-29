@@ -17,7 +17,6 @@ interface IProps {
 
 export default function Book({ book }: IProps) {
   const { author, id, title, cover_image_url, created_at, description } = book;
-
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col">
       <div className="relative w-full h-64 overflow-hidden rounded-md">
@@ -35,7 +34,7 @@ export default function Book({ book }: IProps) {
         <p className="text-sm text-muted-foreground">by {author}</p>
       </CardHeader>
 
-      <CardContent className="flex-grow">
+      <CardContent className="grow">
         <p className="text-sm text-gray-700 line-clamp-3">{description}</p>
         <p className="text-xs text-gray-500 mt-3">
           Added on {new Date(created_at || "").toLocaleDateString()}

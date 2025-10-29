@@ -9,19 +9,31 @@ export interface Book {
   created_at?: string;
 }
 
+export interface BookDetail {
+  id: number;
+  title: string;
+  author: string;
+  description: string;
+  cover_image_url: string;
+  created_at: string;
+  reviews: Review[];
+}
+
 export interface Review {
   id: number;
   book_id: number;
   reviewer_name: string;
   text: string;
   rating: number;
+  summary: string;
+  sentiment_score: number;
+  tags: string[];
   created_at: string;
-  book_title: string;
 }
 
 // For getBooks (list of books only)
 export type BooksListResponse = ApiResponse<Book[]>;
-
+export type BookDetailResponse = ApiResponse<BookDetail>;
 // For search (books + reviews)
 export interface SearchData {
   books: Book[];
@@ -36,8 +48,8 @@ export async function getBooks(): Promise<BooksListResponse> {
 }
 
 // Get one book
-export async function getBookById(id: number) {
-  return fetcher<Book>(`/books/${id}`);
+export async function getBookById(id: number): Promise<BookDetailResponse> {
+  return fetcher<BookDetail>(`/books/${id}`);
 }
 
 // Create book
