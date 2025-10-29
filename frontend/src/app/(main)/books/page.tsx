@@ -74,7 +74,7 @@ export default function BooksPage() {
   return (
     <main className="container mx-auto px-6 py-8">
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-        <h1 className="text-3xl font-semibold tracking-tight">📚 Books</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">📚 Books List</h1>
 
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <DebouncedSearchInput
