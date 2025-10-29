@@ -50,14 +50,14 @@ The frontend (Next.js + React) will consume these APIs and visualize both user a
 
 ## 🚧 Project Status (Development Phases)
 
-| Phase                        | Description                                                                               | Status       |
-| ---------------------------- | ----------------------------------------------------------------------------------------- | ------------ |
-| 🏗️ **Setup & Environment**   | Initialize backend & frontend folders, configure TypeScript, ESLint, Prettier, and Docker | ✅ Completed |
-| ⚙️ **Backend Foundation**    | Express app setup, routes, global error handler, and environment setup                    | ✅ Completed |
-| 🗃️ **Database Integration**  | PostgreSQL setup using pg client, schema design for books & reviews                       | ✅ Completed |
-| 💬 **API Endpoints**         | `/books`, `/reviews` (CRUD + nested routes)                                               | ✅ Completed |
-| 🤖 **Mastra AI Integration** | AI-based enrichment for reviews (summary, sentiment, tags)                                | ⏳ Planned   |
-| 💻 **Frontend UI**           | Next.js pages, book list, detail view, and review form                                    | ⏳ Planned   |
-| 🧪 **Testing**               | Unit + integration tests (Jest, Supertest, RTL)                                           | ⏳ Planned   |
-| 🐳 **Dockerization**         | Dockerfile + docker-compose setup for backend and database                                | ⏳ Planned   |
-| 🧾 **Documentation**         | Final README, API docs, and setup instructions                                            | ⏳ Planned   |
+| Phase                        | Description                                                                               | Status         |
+| ---------------------------- | ----------------------------------------------------------------------------------------- | -------------- |
+| 🏗️ **Setup & Environment**   | Initialize backend & frontend folders, configure TypeScript, ESLint, Prettier, and Docker | ✅ Completed   |
+| ⚙️ **Backend Foundation**    | Express app setup, routes, global error handler, and environment setup                    | ✅ Completed   |
+| 🗃️ **Database Integration**  | PostgreSQL setup using pg client, schema design for books & reviews                       | ✅ Completed   |
+| 💬 **API Endpoints**         | `/books`, `/reviews` (CRUD + nested routes)                                               | ✅ Completed   |
+| 🤖 **Mastra AI Integration** | AI-based enrichment for reviews (summary, sentiment, tags)                                | ⏳ Planned     |
+| 💻 **Frontend UI**           | Next.js pages, book list, detail view, and review form                                    | 🛠️ In Progress |
+| 🧪 **Testing**               | Unit + integration tests (Jest, Supertest, RTL)                                           | ⏳ Planned     |
+| 🐳 **Dockerization**         | Dockerfile + docker-compose setup for backend and database                                | ⏳ Planned     |
+| 🧾 **Documentation**         | Final README, API docs, and setup instructions                                            | ⏳ Planned     |
