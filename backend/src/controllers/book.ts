@@ -8,7 +8,7 @@ import {
 } from "../models/book";
 import { sendResponse } from "../utils/responseHelper";
 import { NotFoundError } from "../utils/notfoundError";
-import { createReview } from "../models/review";
+import { createReview, getReviewsByBookId } from "../models/review";
 import pool from "../config/db";
 
 export const getBooks = async (
@@ -30,12 +30,19 @@ export const getBook = async (
   next: NextFunction
 ) => {
   try {
-    const book = await getBookById(Number(req.params.bookId));
+    const bookId = Number(req.params.bookId);
+    const book = await getBookById(bookId);
 
-    if (!book)
-      throw new NotFoundError(`Book with ID ${req.params.bookId} not found`);
+    if (!book) throw new NotFoundError(`Book with ID ${bookId} not found`);
 
-    return sendResponse(res, 200, "Book retrieved successfully", book);
+    const reviews = await getReviewsByBookId(bookId);
+
+    const combined = {
+      ...book,
+      reviews,
+    };
+
+    return sendResponse(res, 200, "Book retrieved successfully", combined);
   } catch (err) {
     next(err);
   }
