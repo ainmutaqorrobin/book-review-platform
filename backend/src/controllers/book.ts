@@ -10,6 +10,7 @@ import { sendResponse } from "../utils/responseHelper";
 import { NotFoundError } from "../utils/notfoundError";
 import { createReview, getReviewsByBookId } from "../models/review";
 import pool from "../config/db";
+import { enrichReviewText } from "../mastra/agents/analyze-agent";
 
 export const getBooks = async (
   req: Request,
@@ -82,15 +83,22 @@ export const createBookReview = async (
       bookId,
     ]);
 
-    if (book.rowCount === 0)
+    if (book.rowCount === 0) {
       throw new NotFoundError(`Book with ID ${bookId} not found`);
+    }
 
-    // TODO: integrate Mastra AI (summary, sentiment, tags)
+    const { sentimentLabel, sentimentScore, summary, tags } =
+      await enrichReviewText(text);
+
+    // Create review with enriched data
     const newReview = await createReview({
       book_id: bookId,
       reviewer_name,
       text,
       rating,
+      summary,
+      sentiment_score: sentimentScore,
+      tags,
     });
 
     return sendResponse(res, 201, "Review added successfully", newReview);
