@@ -8,38 +8,38 @@ This backend service provides RESTful endpoints for managing books and reviews, 
 
 | Method | Route       | Description                           |
 | ------ | ----------- | ------------------------------------- |
-| GET    | `/`         | Check API status / root health        |
-| GET    | `/database` | Verify database connectivity & status |
+| GET    | `/`         | Main root endpoint — check API status |
+| GET    | `/database` | Check database connection status      |
 
 ---
 
 ## 📚 Books Routes
 
-| Method | Route                     | Description                                |
-| ------ | ------------------------- | ------------------------------------------ |
-| GET    | `/books`                  | Fetch list of all books                    |
-| GET    | `/books/{bookId}`         | Get detailed information for a single book |
-| POST   | `/books`                  | Create a new book                          |
-| PUT    | `/books/{bookId}`         | Update an existing book                    |
-| DELETE | `/books/{bookId}`         | Delete a book by its ID                    |
-| POST   | `/books/{bookId}/reviews` | Create a review for the selected book      |
+| Method | Route                     | Description                                                                             |
+| ------ | ------------------------- | --------------------------------------------------------------------------------------- |
+| GET    | `/books`                  | Get list of all books                                                                   |
+| GET    | `/books/{bookId}`         | Get detailed information of a book                                                      |
+| POST   | `/books`                  | Create a book (body requires `title`, `author`, `description`, `cover_image_url`)       |
+| PUT    | `/books/{bookId}`         | Update a book (body may include `title`, `author`, `description`, `cover_image_url`)    |
+| DELETE | `/books/{bookId}`         | Delete a book by its ID                                                                 |
+| POST   | `/books/{bookId}/reviews` | Create a review for the selected book (body requires `reviewer_name`, `text`, `rating`) |
 
 ---
 
 ## 📝 Reviews Routes
 
-| Method | Route               | Description                           |
-| ------ | ------------------- | ------------------------------------- |
-| GET    | `/reviews/{bookId}` | Retrieve all reviews for a given book |
-| POST   | `/reviews/{bookId}` | Create a new review for a given book  |
+| Method | Route               | Description                                                       |
+| ------ | ------------------- | ----------------------------------------------------------------- |
+| GET    | `/reviews/{bookId}` | Get all reviews of a specific book                                |
+| POST   | `/reviews/{bookId}` | Create a review (body requires `reviewer_name`, `text`, `rating`) |
 
 ---
 
 ## 🔍 Search Route
 
-| Method | Route                       | Description                    |
-| ------ | --------------------------- | ------------------------------ |
-| GET    | `/search?query={yourQuery}` | Search across books or reviews |
+| Method | Route                       | Description                     |
+| ------ | --------------------------- | ------------------------------- |
+| GET    | `/search?query={yourQuery}` | Search for books **or** reviews |
 
 ---
 
