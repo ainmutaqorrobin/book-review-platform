@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardHeader,
@@ -6,17 +8,34 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Book as Model } from "@/utils/api/books";
+import { deleteBook, Book as Model } from "@/utils/api/books";
 import Image from "next/image";
 import Link from "next/link";
 import { FALLBACK_IMAGE } from "@/utils/const/image";
+import { toast } from "sonner";
+import ConfirmationDialog from "./confirmation-dialog";
 
 interface IProps {
   book: Model;
+  onBookDeleteCallback: () => void;
 }
 
-export default function Book({ book }: IProps) {
+export default function Book({ book, onBookDeleteCallback }: IProps) {
   const { author, id, title, cover_image_url, created_at, description } = book;
+
+  const handleDelete = async () => {
+    try {
+      const res = await deleteBook(id);
+      if (res.success) {
+        toast.success("Book deleted successfully");
+        onBookDeleteCallback();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(error);
+    }
+  };
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 flex flex-col">
       <div className="relative w-full h-64 overflow-hidden rounded-md">
@@ -41,8 +60,22 @@ export default function Book({ book }: IProps) {
         </p>
       </CardContent>
 
-      <CardFooter className="flex justify-end px-6 py-4">
-        <Link href={`/books/${id}`} passHref>
+      <CardFooter className="flex justify-between px-6 py-4">
+        <ConfirmationDialog
+          title={`Delete "${title}"?`}
+          description="This action cannot be undone."
+          actionText="Confirm Delete"
+          onConfirm={handleDelete}
+        >
+          <Button
+            variant="destructive"
+            className="w-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+          >
+            Delete
+          </Button>
+        </ConfirmationDialog>
+
+        <Link href={`/books/${id}`}>
           <Button
             variant="secondary"
             className="w-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg"
