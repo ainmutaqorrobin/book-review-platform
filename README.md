@@ -1,26 +1,20 @@
 # 📚 Book Review Platform (Take-Home Challenge)
 
-A full-stack web application where users can browse books, write reviews, and get AI-enriched insights (summary, sentiment, and tags) using **Mastra AI**.  
-This project demonstrates full-stack development, REST API design, clean architecture, and upcoming AI integration.
+A **full-stack web application** where users can browse books, write reviews, and get **AI-enriched insights** (summary, sentiment, and tags) powered by **Mastra AI**.  
+This project demonstrates **Express + PostgreSQL + Next.js + TypeScript** integration, clean architecture, and modern frontend practices.
 
 ---
 
 ## 🧠 Overview
 
-The **Book Review Platform** allows users to:
+The **Book Review Platform** enables users to:
 
-- View and manage a list of books.
+- View list of books.
+- Create and delete a book.
 - Read detailed book information and user reviews.
-- Submit new reviews (with rating, text, and reviewer name).
-- Retrieve reviews associated with a specific book.
-- Manage books with full CRUD functionality (Create, Read, Update, Delete).
-- (Coming soon) Automatically enrich reviews using **Mastra AI** for:
-  - Summarization
-  - Sentiment analysis
-  - Tag generation
-
-The backend is built using **Express + PostgreSQL + TypeScript**, following modular, maintainable design practices.  
-The frontend (Next.js + React) will consume these APIs and visualize both user and AI-generated data.
+- Submit reviews with rating, text, and reviewer name.
+- Enrich reviews automatically using **Mastra AI**.
+- Enjoy a smooth, modern user experience.
 
 ---
 
@@ -28,36 +22,130 @@ The frontend (Next.js + React) will consume these APIs and visualize both user a
 
 ### **Backend**
 
-- [Express.js](https://expressjs.com/) – Fast and minimal web framework for Node.js
-- [TypeScript](https://www.typescriptlang.org/) – Strongly typed JavaScript for scalable development
-- [PostgreSQL](https://www.postgresql.org/) – Relational database for structured data
-- [pg](https://www.npmjs.com/package/pg) – PostgreSQL client for Node.js
-- [express-validator](https://express-validator.github.io/docs/) – Request validation and sanitization
-- [dotenv](https://www.npmjs.com/package/dotenv) – Environment configuration
-- [Jest](https://jestjs.io/) + [Supertest](https://www.npmjs.com/package/supertest) – Unit and integration testing
-- [Docker](https://www.docker.com/) – Containerization for consistent deployment
-- [Mastra AI](https://mastra.ai/) – _(Planned)_ For AI-based review enrichment (summary, sentiment, tags)
+- [Express.js](https://expressjs.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [pg](https://www.npmjs.com/package/pg)
+- [express-validator](https://express-validator.github.io/docs/)
+- [dotenv](https://www.npmjs.com/package/dotenv)
+- [express-rate-limit](https://www.npmjs.com/package/express-rate-limit)
+- [Mastra AI](https://mastra.ai/)
+- [Docker](https://www.docker.com/)
 
 ### **Frontend**
 
-- [Next.js](https://nextjs.org/) + [React](https://react.dev/) – Modern React framework for building the client-side app
-- [TypeScript](https://www.typescriptlang.org/) – Type-safe React components
-- [React Hook Form](https://react-hook-form.com/) – Simplified form handling
-- [Axios](https://axios-http.com/) / Fetch API – For backend communication
-- [Tailwind CSS](https://tailwindcss.com/) _(Planned)_ – Utility-first styling
+- [Next.js](https://nextjs.org/)
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [React Hook Form](https://react-hook-form.com/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Shadcn UI](https://ui.shadcn.com/)
+- [Sonner](https://sonner.emilkowal.ski/) (for toast notifications)
+- [Lucide Icons](https://lucide.dev/icons/)
 
 ---
 
-## 🚧 Project Status (Development Phases)
+## ⚙️ Backend Features
 
-| Phase                        | Description                                                                               | Status         |
-| ---------------------------- | ----------------------------------------------------------------------------------------- | -------------- |
-| 🏗️ **Setup & Environment**   | Initialize backend & frontend folders, configure TypeScript, ESLint, Prettier, and Docker | ✅ Completed   |
-| ⚙️ **Backend Foundation**    | Express app setup, routes, global error handler, and environment setup                    | ✅ Completed   |
-| 🗃️ **Database Integration**  | PostgreSQL setup using pg client, schema design for books & reviews                       | ✅ Completed   |
-| 💬 **API Endpoints**         | `/books`, `/reviews` (CRUD + nested routes)                                               | ✅ Completed   |
-| 🤖 **Mastra AI Integration** | AI-based enrichment for reviews (summary, sentiment, tags)                                | ⏳ Planned     |
-| 💻 **Frontend UI**           | Next.js pages, book list, detail view, and review form                                    | 🛠️ In Progress |
-| 🧪 **Testing**               | Unit + integration tests (Jest, Supertest, RTL)                                           | ⏳ Planned     |
-| 🐳 **Dockerization**         | Dockerfile + docker-compose setup for backend and database                                | ⏳ Planned     |
-| 🧾 **Documentation**         | Final README, API docs, and setup instructions                                            | ⏳ Planned     |
+| Feature                       | Description                                                  |
+| ----------------------------- | ------------------------------------------------------------ |
+| 🗃️ **PostgreSQL Integration** | Fully connected relational database using `pg`               |
+| ✅ **Input Validation**       | Implemented via `express-validator`                          |
+| 🚨 **Error Handling**         | Centralized error handler using custom `AppError`            |
+| 🧠 **Mastra AI Integration**  | Automatic summary, sentiment, and tag generation for reviews |
+| 🚦 **Rate Limiter**           | Prevents excessive API calls per IP address                  |
+
+---
+
+## 💻 Frontend Features
+
+| Feature                       | Description                                                  |
+| ----------------------------- | ------------------------------------------------------------ |
+| 🏠 **Landing Page**           | Main entry point showcasing platform features                |
+| 📚 **Books List Page**        | Displays all available books with search and refresh options |
+| 📖 **Book Detail Page**       | Shows details and reviews for each book                      |
+| 🔍 **Search Bar (Debounced)** | Smart searching with delay using debounced input             |
+| ⏳ **Skeletons & Loaders**    | Smooth loading states for better UX                          |
+| 🎨 **Pretty Layout/UI**       | Modern look using Tailwind + Shadcn                          |
+| 📝 **Form Validation**        | Built with React Hook Form                                   |
+| 🔔 **Toast Notifications**    | User feedback using Sonner                                   |
+
+---
+
+## 🚀 How to Run
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/yourusername/book-review-platform.git
+   cd book-review-platform
+   ```
+
+2. **Copy the environment file:**
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Then edit `.env` and fill in your own values.
+
+3. **Build and run using Docker:**
+
+   ```bash
+   docker compose up --build
+   ```
+
+4. **Access the app:**
+   - Frontend → [http://localhost:3000](http://localhost:3000)
+   - Backend → [http://localhost:4000](http://localhost:4000)
+
+---
+
+## 📦 Folder Structure
+
+```
+book-review-platform/
+│
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middlewares/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── utils/
+│   │   ├── validation/
+│   │   ├── mastra/
+│   │   └── app.ts / server.ts
+│   ├── Dockerfile
+│   └── package.json
+│
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── lib/
+│   │   └── utils/
+│   ├── Dockerfile
+│   └── package.json
+│
+└── docker-compose.yml
+
+```
+
+---
+
+## 🧾 Development Progress
+
+| Phase                        | Description                                  | Status           |
+| ---------------------------- | -------------------------------------------- | ---------------- |
+| 🏗️ **Setup & Environment**   | Configured backend, frontend, Docker         | ✅ Completed     |
+| ⚙️ **Backend Foundation**    | Express setup, validation, error handler     | ✅ Completed     |
+| 🗃️ **Database Integration**  | PostgreSQL setup & connection                | ✅ Completed     |
+| 💬 **API Endpoints**         | CRUD for `/books` and `/reviews`             | ✅ Completed     |
+| 🤖 **Mastra AI Integration** | Review enrichment (summary, sentiment, tags) | ✅ Completed     |
+| 💻 **Frontend UI**           | Next.js app with pages, forms, and UI        | ✅ Completed     |
+| 🧪 **Testing**               | Unit & integration (Jest, Supertest)         | ❌ Not Completed |
+| 🐳 **Dockerization**         | Docker & docker-compose setup                | ✅ Completed     |
+| 🧾 **Documentation**         | Project guide & README                       | ✅ Completed     |
