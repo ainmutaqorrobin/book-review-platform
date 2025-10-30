@@ -45,7 +45,6 @@ export default function ReviewForm({ bookId }: IProps) {
   const onSubmit = async (data: ReviewFormData) => {
     try {
       const response = await createReview(data, bookId);
-      console.log(response);
       if (response.success) {
         router.back();
         toast.success("Review submitted");
