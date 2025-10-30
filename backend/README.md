@@ -2,6 +2,8 @@
 
 This backend service provides RESTful endpoints for managing books and reviews, built with Express.js, TypeScript, and PostgreSQL.
 
+View [API Documentation](https://documenter.getpostman.com/view/24966843/2sB3WnxMsD#b76501d0-09db-4b5c-bd75-fcd66890bcb2)
+
 ---
 
 ## ✅ Base Endpoints
