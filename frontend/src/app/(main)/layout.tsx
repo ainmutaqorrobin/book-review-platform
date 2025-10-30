@@ -2,6 +2,7 @@ import "../globals.css";
 import { ReactNode } from "react";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 interface RootLayoutProps {
   children: ReactNode;
 }
@@ -23,16 +24,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
             </Link>
             <nav className="flex gap-4">
               <Link
-                href="/login"
+                href="/create-book"
                 className={buttonVariants({ variant: "ghost" })}
               >
-                Sign In
+                Create Your Book
               </Link>
               <Link
                 href="/books"
                 className={buttonVariants({ variant: "ghost" })}
               >
-                Books
+                Books List
               </Link>
             </nav>
           </div>
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
         {/* Main content */}
         <main className="container mx-auto px-6 py-10">{children}</main>
+        <Toaster />
       </body>
     </html>
   );
