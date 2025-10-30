@@ -64,6 +64,7 @@ The **Book Review Platform** enables users to:
 | 🏠 **Landing Page**           | Main entry point showcasing platform features                |
 | 📚 **Books List Page**        | Displays all available books with search and refresh options |
 | 📖 **Book Detail Page**       | Shows details and reviews for each book                      |
+| 🗎 **Create A Book Page**      | Fill the details and submit form to create new book          |
 | 🔍 **Search Bar (Debounced)** | Smart searching with delay using debounced input             |
 | ⏳ **Skeletons & Loaders**    | Smooth loading states for better UX                          |
 | 🎨 **Pretty Layout/UI**       | Modern look using Tailwind + Shadcn                          |

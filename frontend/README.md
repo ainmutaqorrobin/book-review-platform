@@ -12,6 +12,7 @@ Based on your folder structure (`/frontend/src/app/`), the main routes include:
 - `/books` — Books list page
 - `/books/[id]` — Book detail page
 - `/books/[id]/review` — Submit review page
+- `/create-book` — Create a book page
 - Additional UI components and utility routes/hooks are in `/components/`, `/hooks/`, `/utils/`, and `/lib/`
 
 ---
