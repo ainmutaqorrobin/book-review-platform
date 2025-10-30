@@ -4,7 +4,7 @@ interface IProps {
   params: Promise<{ id: string }>;
 }
 
-async function Page({ params }: IProps) {
+export default async function CreateReviewPage({ params }: IProps) {
   const { id } = await params;
 
   return (
@@ -13,5 +13,3 @@ async function Page({ params }: IProps) {
     </main>
   );
 }
-
-export default Page;

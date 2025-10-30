@@ -1,11 +1,9 @@
 import BookForm from "@/components/form/book";
 
-function CreateBookPage() {
+export default function CreateBookPage() {
   return (
     <main>
       <BookForm />
     </main>
   );
 }
-
-export default CreateBookPage;

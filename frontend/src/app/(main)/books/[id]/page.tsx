@@ -4,7 +4,7 @@ interface IProps {
   params: Promise<{ id: string }>;
 }
 
-export default async function Page({ params }: IProps) {
+export default async function BookDetailPage({ params }: IProps) {
   const { id } = await params;
   const bookId = Number(id);
 
