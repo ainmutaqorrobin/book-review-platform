@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import BackButton from "../common/back-button";
 import { createReview } from "@/utils/api/reviews";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 interface ReviewFormData {
   reviewer_name: string;
@@ -43,9 +45,16 @@ export default function ReviewForm({ bookId }: IProps) {
   const onSubmit = async (data: ReviewFormData) => {
     try {
       const response = await createReview(data, bookId);
-      if (response.success) router.back();
+      console.log(response);
+      if (response.success) {
+        router.back();
+        toast.success("Review submitted");
+      }
+
+      toast.error(response.message);
     } catch (error) {
-      console.error(error);
+      console.log(error);
+      toast.error(error.message);
     }
   };
 
@@ -132,7 +141,14 @@ export default function ReviewForm({ bookId }: IProps) {
               className="transition-transform duration-200 hover:scale-105 hover:shadow-lg"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Submitting" : "Submit a review"}
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin mr-2 h-4 w-4" />
+                  Submitting…
+                </>
+              ) : (
+                "Submit a review"
+              )}
             </Button>
           </div>
         </form>

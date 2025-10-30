@@ -7,6 +7,7 @@ import BooksList from "@/components/common/book-list";
 import BookSkeleton from "@/components/common/book-skeleton";
 import { getBooks, searchBooks } from "@/utils/api/books";
 import DebouncedSearchInput from "@/components/common/debounced-input";
+import { toast } from "sonner";
 
 export default function BooksPage() {
   const [books, setBooks] = useState<any[]>([]);
@@ -29,6 +30,7 @@ export default function BooksPage() {
       } else {
         setBooks([]);
         setError(res.message || "Failed to load books.");
+        toast.error(res.message);
       }
     } catch (err) {
       console.error("Unexpected error fetching books:", err);
