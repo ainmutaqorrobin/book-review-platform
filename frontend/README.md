@@ -20,7 +20,7 @@ Based on your folder structure (`/frontend/src/app/`), the main routes include:
 
 - ✅ **Debounced Search**: A search bar that delays API calls until the user pauses typing, reducing backend load and improving UX. :contentReference[oaicite:0]{index=0}
 - ✅ **Form Validation**: Built with React Hook Form + custom UI components (Shadcn UI) so that forms (e.g., review submission, book creation) enforce correct input.
-- ✅ **Toast Notifications**: Instant feedback to the user (success, error, loading) using a toast library integrated into Next.js App Router. :contentReference[oaicite:1]{index=1}
+- ✅ **Toast Notifications**: Instant feedback to the user (success, error, loading) using a toast library integrated into Next.js App Router.
 - ✅ **Custom Hooks**: Encapsulate logic like fetching books, managing search state, or refreshing data so your components stay clean.
 - ✅ **Loading Skeletons & Icons**: While fetching data (books, book details, reviews) a skeleton or loading spinner is shown to keep UI responsive and visually smooth.
 - ✅ **Pretty Layout / UI**: Tailwind CSS + Shadcn UI ensures consistent styling, responsive design, and modern look & feel.
