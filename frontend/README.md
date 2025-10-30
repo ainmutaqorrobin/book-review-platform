@@ -1,36 +1,27 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Book Review Platform — Frontend
 
-## Getting Started
+The frontend client for the Book Review Platform. Built with Next.js (App Router) + React + TypeScript, this UI connects to the backend API and provides a rich user experience, including debounced search, form validation, toast notifications, custom hooks, and modern UI components.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🔍 Route Overview (Next.js App Router)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Based on your folder structure (`/frontend/src/app/`), the main routes include:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `/` — Landing (home) page
+- `/books` — Books list page
+- `/books/[id]` — Book detail page
+- `/books/[id]/review` — Submit review page
+- Additional UI components and utility routes/hooks are in `/components/`, `/hooks/`, `/utils/`, and `/lib/`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 🧠 Key Features
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- ✅ **Debounced Search**: A search bar that delays API calls until the user pauses typing, reducing backend load and improving UX. :contentReference[oaicite:0]{index=0}
+- ✅ **Form Validation**: Built with React Hook Form + custom UI components (Shadcn UI) so that forms (e.g., review submission, book creation) enforce correct input.
+- ✅ **Toast Notifications**: Instant feedback to the user (success, error, loading) using a toast library integrated into Next.js App Router. :contentReference[oaicite:1]{index=1}
+- ✅ **Custom Hooks**: Encapsulate logic like fetching books, managing search state, or refreshing data so your components stay clean.
+- ✅ **Loading Skeletons & Icons**: While fetching data (books, book details, reviews) a skeleton or loading spinner is shown to keep UI responsive and visually smooth.
+- ✅ **Pretty Layout / UI**: Tailwind CSS + Shadcn UI ensures consistent styling, responsive design, and modern look & feel.
+- ✅ **App Router**: Utilizes Next.js App Router architecture for nested layouts, server and client components, and route-based data fetching.
