@@ -48,9 +48,7 @@ export default function ReviewForm({ bookId }: IProps) {
       if (response.success) {
         router.back();
         toast.success("Review submitted");
-      }
-
-      toast.error(response.message);
+      } else toast.error(response.message);
     } catch (error) {
       console.log(error);
       toast.error(error.message);
