@@ -18,7 +18,7 @@ Based on your folder structure (`/frontend/src/app/`), the main routes include:
 
 ## 🧠 Key Features
 
-- ✅ **Debounced Search**: A search bar that delays API calls until the user pauses typing, reducing backend load and improving UX. :contentReference[oaicite:0]{index=0}
+- ✅ **Debounced Search**: A search bar that delays API calls until the user pauses typing, reducing backend load and improving UX.
 - ✅ **Form Validation**: Built with React Hook Form + custom UI components (Shadcn UI) so that forms (e.g., review submission, book creation) enforce correct input.
 - ✅ **Toast Notifications**: Instant feedback to the user (success, error, loading) using a toast library integrated into Next.js App Router.
 - ✅ **Custom Hooks**: Encapsulate logic like fetching books, managing search state, or refreshing data so your components stay clean.
