@@ -143,7 +143,7 @@ book-review-platform/
 | 🏗️ **Setup & Environment**   | Configured backend, frontend, Docker         | ✅ Completed     |
 | ⚙️ **Backend Foundation**    | Express setup, validation, error handler     | ✅ Completed     |
 | 🗃️ **Database Integration**  | PostgreSQL setup & connection                | ✅ Completed     |
-| 💬 **API Endpoints**         | CRUD for `/books` and `/reviews`             | ✅ Completed     |
+| 💬 **API Endpoints**         | CRUD for `/books`, create and get `/reviews` | ✅ Completed     |
 | 🤖 **Mastra AI Integration** | Review enrichment (summary, sentiment, tags) | ✅ Completed     |
 | 💻 **Frontend UI**           | Next.js app with pages, forms, and UI        | ✅ Completed     |
 | 🧪 **Testing**               | Unit & integration (Jest, Supertest)         | ❌ Not Completed |
