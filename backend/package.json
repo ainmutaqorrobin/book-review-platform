@@ -1,13 +1,13 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "type": "module",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
-    "build": "tsc",
-    "start": "tsx src/server.ts"
+    "build": "tsc && tsc-esm-fix dist",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
     "express-validator": "^7.3.0",
     "nodemon": "^3.1.10",
     "pg": "^8.16.3",
+    "tsc-esm-fix": "^3.1.2",
     "zod": "^4.1.12"
   },
   "devDependencies": {
