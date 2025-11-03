@@ -1,4 +1,4 @@
-# 📚 Book Review Platform (Take-Home Challenge)
+# 📚 Book Review Platform
 
 A **full-stack web application** where users can browse books, write reviews, and get **AI-enriched insights** (summary, sentiment, and tags) powered by **Mastra AI**.  
 This project demonstrates **Express + PostgreSQL + Next.js + TypeScript** integration, clean architecture, and modern frontend practices.
