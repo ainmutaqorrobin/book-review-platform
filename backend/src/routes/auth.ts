@@ -1,4 +1,3 @@
-// src/routes/auth.ts
 import { Router } from "express";
 import { signup, login, getCurrentUser, logout } from "../controllers/auth";
 import { handleValidation } from "../middlewares/validateRequest";
