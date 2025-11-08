@@ -1,3 +1,7 @@
+export enum Role {
+  USER = "user",
+  ADMIN = "admin",
+}
 export interface Book {
   title: string;
   author: string;
@@ -13,4 +17,13 @@ export interface Review {
   summary?: string;
   sentiment_score?: number;
   tags?: string[];
+}
+
+export interface User {
+  id: number;
+  username: string;
+  password_hash: string;
+  name: string;
+  role: Role;
+  created_at: Date;
 }

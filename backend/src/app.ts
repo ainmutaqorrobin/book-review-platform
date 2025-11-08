@@ -9,8 +9,11 @@ import { SearchRouter } from "./routes/search";
 import { globalRateLimiter } from "./middlewares/rateLimiter";
 import { Mastra } from "@mastra/core";
 import { analyzeAgents } from "./mastra/agents/analyze-agent";
+import { AuthRouter } from "./routes/auth";
+import cookieParser from "cookie-parser";
 const app = express();
 
+app.use(cookieParser());
 app.use(cors());
 app.use(json());
 
@@ -25,6 +28,7 @@ app.get("/", (req, res) => {
   res.json({ message: "📚 Book Review API is running!!" });
 });
 
+app.use(AuthRouter);
 app.use("/books", BookRouter);
 app.use("/reviews", ReviewRouter);
 app.use("/search", SearchRouter);
