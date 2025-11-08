@@ -9,7 +9,6 @@ import { SearchRouter } from "./routes/search";
 import { globalRateLimiter } from "./middlewares/rateLimiter";
 import { Mastra } from "@mastra/core";
 import { analyzeAgents } from "./mastra/agents/analyze-agent";
-
 const app = express();
 
 app.use(cors());
