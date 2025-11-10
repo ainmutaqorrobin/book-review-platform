@@ -17,6 +17,7 @@ export async function fetcher<T>(
     const response = await axios({
       url: `${baseURL}${path}`,
       method: options.method || "GET",
+      withCredentials: true,
       headers: {
         "Content-Type": "application/json",
         ...(options.headers || {}),
@@ -27,12 +28,11 @@ export async function fetcher<T>(
 
     return response.data as ApiResponse<T>;
   } catch (error: any) {
-    console.error("❌ API Error:", error.message);
+    console.error("❌ API Error:", error?.response?.data || error.message);
 
-    // Use fallbackData if provided
     return {
       success: false,
-      message: "Backend not reachable. Showing empty data.",
+      message: error?.response?.data?.message || "Backend not reachable",
       data: fallbackData as T,
     };
   }
