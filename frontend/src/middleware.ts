@@ -1,15 +1,35 @@
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-export function middleware(req: Request) {
-  const hasJWT = req.headers.get("cookie")?.includes("jwt=");
+const AUTH_PROTECTED = ["/create-book", "/dashboard", "/books"];
 
-  if (!hasJWT && req.url.includes("/create-book")) {
-    return NextResponse.redirect(new URL("/login", req.url));
+const ADMIN_PROTECTED = ["/admin"];
+
+export function middleware(req: NextRequest) {
+  const url = req.nextUrl.clone();
+  const { pathname } = url;
+  const token = req.cookies.get("jwt");
+
+  // Require login
+  if (AUTH_PROTECTED.some((route) => pathname.startsWith(route))) {
+    if (!token) {
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Require admin (optional)
+  if (ADMIN_PROTECTED.some((route) => pathname.startsWith(route))) {
+    // redirect if no token
+    if (!token) {
+      url.pathname = "/login";
+      return NextResponse.redirect(url);
+    }
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/create-book/:path*", "/admin/:path*", "/dashboard/:path*"],
+  matcher: ["/create-book/:path*", "/dashboard/:path*", "/admin/:path*"],
 };
