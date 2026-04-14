@@ -1,152 +1,96 @@
-# 📚 Book Review Platform
+# Book Review Platform
 
-A **full-stack web application** where users can browse books, write reviews, and get **AI-enriched insights** (summary, sentiment, and tags) powered by **Mastra AI**.  
-This project demonstrates **Express + PostgreSQL + Next.js + TypeScript** integration, clean architecture, and modern frontend practices.
+Book Review Platform is a full-stack app for browsing books, writing reviews, and enriching reviews with AI-generated summary, sentiment, and tags. The stack uses Express, PostgreSQL, Next.js, TypeScript, and Docker.
 
----
+## Stack
 
-## 🧠 Overview
+- Backend: Express, TypeScript, PostgreSQL, Mastra AI
+- Frontend: Next.js App Router, React, TypeScript, Tailwind CSS, React Hook Form
+- Deployment: Docker Compose, Docker Hub, GitHub Actions, VPS + Nginx
 
-The **Book Review Platform** enables users to:
+## Local Development With Docker
 
-- View list of books.
-- Create and delete a book.
-- Read detailed book information and user reviews.
-- Submit reviews with rating, text, and reviewer name.
-- Enrich reviews automatically using **Mastra AI**.
-- Enjoy a smooth, modern user experience.
-
----
-
-## 🧩 Tech Stack
-
-### **Backend**
-
-- [Express.js](https://expressjs.com/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [PostgreSQL](https://www.postgresql.org/)
-- [pg](https://www.npmjs.com/package/pg)
-- [express-validator](https://express-validator.github.io/docs/)
-- [dotenv](https://www.npmjs.com/package/dotenv)
-- [express-rate-limit](https://www.npmjs.com/package/express-rate-limit)
-- [Mastra AI](https://mastra.ai/)
-- [Docker](https://www.docker.com/)
-
-### **Frontend**
-
-- [Next.js](https://nextjs.org/)
-- [React](https://react.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [React Hook Form](https://react-hook-form.com/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Shadcn UI](https://ui.shadcn.com/)
-- [Sonner](https://sonner.emilkowal.ski/) (for toast notifications)
-- [Lucide Icons](https://lucide.dev/icons/)
-
----
-
-## ⚙️ Backend Features
-
-| Feature                       | Description                                                  |
-| ----------------------------- | ------------------------------------------------------------ |
-| 🗃️ **PostgreSQL Integration** | Fully connected relational database using `pg`               |
-| ✅ **Input Validation**       | Implemented via `express-validator`                          |
-| 🚨 **Error Handling**         | Centralized error handler using custom `AppError`            |
-| 🧠 **Mastra AI Integration**  | Automatic summary, sentiment, and tag generation for reviews |
-| 🚦 **Rate Limiter**           | Prevents excessive API calls per IP address                  |
-
----
-
-## 💻 Frontend Features
-
-| Feature                       | Description                                                  |
-| ----------------------------- | ------------------------------------------------------------ |
-| 🏠 **Landing Page**           | Main entry point showcasing platform features                |
-| 📚 **Books List Page**        | Displays all available books with search and refresh options |
-| 📖 **Book Detail Page**       | Shows details and reviews for each book                      |
-| 🗎 **Create A Book Page**      | Fill the details and submit form to create new book          |
-| 🔍 **Search Bar (Debounced)** | Smart searching with delay using debounced input             |
-| ⏳ **Skeletons & Loaders**    | Smooth loading states for better UX                          |
-| 🎨 **Pretty Layout/UI**       | Modern look using Tailwind + Shadcn                          |
-| 📝 **Form Validation**        | Built with React Hook Form                                   |
-| 🔔 **Toast Notifications**    | User feedback using Sonner                                   |
-
----
-
-## 🚀 How to Run
-
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/book-review-platform.git
-   cd book-review-platform
-   ```
-
-2. **Copy the environment file:**
+1. Copy the local environment file:
 
    ```bash
    cp .env.example .env
    ```
 
-   Then edit `.env` and fill in your own values.
+2. Fill in the required secrets in `.env`, especially:
+   - `OPENAI_API_KEY`
+   - `JWT_SECRET`
+   - `JWT_EXPIRES_IN`
 
-3. **Build and run using Docker:**
+3. Make sure Docker Desktop or your local Docker daemon is running.
+
+4. Start the full local development stack:
 
    ```bash
    docker compose up --build
    ```
 
-4. **Access the app:**
-   - Frontend → [http://localhost:3000](http://localhost:3000)
-   - Backend → [http://localhost:4000](http://localhost:4000)
+5. Open the app:
+   - Frontend: `http://localhost:3000`
+   - Backend API: `http://localhost:4000`
+   - Database health check: `http://localhost:4000/database`
 
----
+6. Seed dummy data when you want:
 
-## 📦 Folder Structure
+   ```bash
+   docker compose exec backend npm run seed
+   ```
 
-```
-book-review-platform/
-│
-├── backend/
-│   ├── src/
-│   │   ├── config/
-│   │   ├── controllers/
-│   │   ├── middlewares/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── utils/
-│   │   ├── validation/
-│   │   ├── mastra/
-│   │   └── app.ts / server.ts
-│   ├── Dockerfile
-│   └── package.json
-│
-├── frontend/
-│   ├── src/
-│   │   ├── app/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── lib/
-│   │   └── utils/
-│   ├── Dockerfile
-│   └── package.json
-│
-└── docker-compose.yml
+The local compose file now runs:
+- `frontend` from `./frontend` in development mode with hot reload
+- `backend` from `./backend` in development mode with hot reload
+- `db` from `postgres:16-alpine`
 
-```
+The database schema is initialized from `backend/db/schema.sql` the first time the Postgres volume is created.
+Source code is bind-mounted into the frontend and backend containers, while `node_modules` stay inside Docker volumes so you can edit locally without reinstalling on every container start.
 
----
+## Production Deployment Model
 
-## 🧾 Development Progress
+Production uses a separate compose file:
 
-| Phase                        | Description                                  | Status           |
-| ---------------------------- | -------------------------------------------- | ---------------- |
-| 🏗️ **Setup & Environment**   | Configured backend, frontend, Docker         | ✅ Completed     |
-| ⚙️ **Backend Foundation**    | Express setup, validation, error handler     | ✅ Completed     |
-| 🗃️ **Database Integration**  | PostgreSQL setup & connection                | ✅ Completed     |
-| 💬 **API Endpoints**         | CRUD for `/books`, create and get `/reviews` | ✅ Completed     |
-| 🤖 **Mastra AI Integration** | Review enrichment (summary, sentiment, tags) | ✅ Completed     |
-| 💻 **Frontend UI**           | Next.js app with pages, forms, and UI        | ✅ Completed     |
-| 🧪 **Testing**               | Unit & integration (Jest, Supertest)         | ❌ Not Completed |
-| 🐳 **Dockerization**         | Docker & docker-compose setup                | ✅ Completed     |
-| 🧾 **Documentation**         | Project guide & README                       | ✅ Completed     |
+- `docker-compose.production.yml` pulls prebuilt Docker Hub images for `frontend` and `backend`
+- A `db` container runs on the VPS with a named volume
+- Nginx on the VPS terminates TLS and proxies:
+  - `/` to `127.0.0.1:3000`
+  - `/api/` to `127.0.0.1:4000/`
+
+The frontend production build is compiled with `NEXT_PUBLIC_API_URL=/api`, so the browser talks to the API through the same public domain:
+
+- `https://book-review.mutaqorrobin.online`
+
+## CI/CD
+
+GitHub Actions in `.github/workflows/deploy.yml` runs on pushes to `main` and on manual dispatch.
+
+It does the following:
+
+1. Installs dependencies and builds the backend.
+2. Installs dependencies and builds the frontend with `NEXT_PUBLIC_API_URL=/api`.
+3. Builds and pushes these images to Docker Hub:
+   - `${DOCKER_USERNAME}/book-review-backend`
+   - `${DOCKER_USERNAME}/book-review-frontend`
+4. SSHes into the VPS and runs:
+
+   ```bash
+   git pull --ff-only origin main
+   docker compose --env-file .env.production -f docker-compose.production.yml pull
+   docker compose --env-file .env.production -f docker-compose.production.yml up -d --remove-orphans
+   docker image prune -f
+   ```
+
+## Environment Files
+
+- `.env.example`: local Docker and local browser settings
+- `.env.production.example`: production values for the VPS copy at `.env.production`
+
+Keep real secrets out of git. `.env.production` should exist only on the VPS.
+
+## Notes
+
+- Production Postgres is a fresh database by default.
+- Existing API routes stay unchanged; Nginx strips the `/api` prefix before the request reaches Express.
+- `TODO-VPS.md` lists the manual VPS steps that still need to be completed on your server.

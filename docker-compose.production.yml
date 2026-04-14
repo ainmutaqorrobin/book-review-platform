@@ -5,9 +5,7 @@ services:
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-bookreview}
       POSTGRES_USER: ${POSTGRES_USER:-bookreview}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bookreviewpassword}
-    ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./backend/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
@@ -23,26 +21,21 @@ services:
       start_period: 10s
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
+    image: ${DOCKER_USERNAME}/book-review-backend:${IMAGE_TAG:-latest}
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "${BACKEND_PORT:-4000}:4000"
+      - "127.0.0.1:${BACKEND_PORT:-4000}:4000"
     environment:
       PORT: 4000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-bookreview}:${POSTGRES_PASSWORD:-bookreviewpassword}@db:5432/${POSTGRES_DB:-bookreview}
+      DATABASE_URL: ${DATABASE_URL}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
-      NODE_ENV: development
-    volumes:
-      - ./backend:/app
-      - backend-node-modules:/app/node_modules
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-https://book-review.mutaqorrobin.online}
+      NODE_ENV: production
     healthcheck:
       test:
         [
@@ -57,22 +50,16 @@ services:
       start_period: 20s
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
+    image: ${DOCKER_USERNAME}/book-review-frontend:${IMAGE_TAG:-latest}
     restart: unless-stopped
     depends_on:
       backend:
         condition: service_healthy
     ports:
-      - "${FRONTEND_PORT:-3000}:3000"
+      - "127.0.0.1:${FRONTEND_PORT:-3000}:3000"
     environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
-      NODE_ENV: development
-    volumes:
-      - ./frontend:/app
-      - frontend-node-modules:/app/node_modules
-      - frontend-next:/app/.next
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+      NODE_ENV: production
     healthcheck:
       test:
         [
@@ -88,6 +75,3 @@ services:
 
 volumes:
   postgres-data:
-  backend-node-modules:
-  frontend-node-modules:
-  frontend-next:

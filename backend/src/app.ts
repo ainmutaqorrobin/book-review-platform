@@ -1,5 +1,5 @@
 import express, { json } from "express";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import { BookRouter } from "./routes/book";
 import { errorHandler } from "./middlewares/errorHandler";
 import { AppError } from "./utils/appError";
@@ -13,8 +13,38 @@ import { AuthRouter } from "./routes/auth";
 import cookieParser from "cookie-parser";
 const app = express();
 
+const defaultAllowedOrigins = [
+  "http://localhost:3000",
+  "https://book-review.mutaqorrobin.online",
+];
+
+const allowedOrigins = (
+  process.env.CORS_ALLOWED_ORIGINS ?? defaultAllowedOrigins.join(",")
+)
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const corsOptions: CorsOptions = {
+  origin(origin, callback) {
+    if (!origin) {
+      callback(null, true);
+      return;
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+
+    callback(new Error("Not allowed by CORS"));
+  },
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
 app.use(cookieParser());
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(json());
 
 app.use(globalRateLimiter);
