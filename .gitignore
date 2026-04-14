@@ -7,6 +7,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 .env
+.env.production
 .env.local
 .env.development.local
 .env.test.local
@@ -60,3 +61,4 @@ Thumbs.db
 # Ignore any local playground files
 playground/
 test-output/
+.deploy
