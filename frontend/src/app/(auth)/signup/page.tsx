@@ -9,9 +9,10 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/components/providers/auth-provider";
 import { toast } from "sonner";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
-  const { isAuthenticated, isLoading, login } = useAuth();
+  const { isAuthenticated, isLoading, login, signup } = useAuth();
+  const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,16 +33,24 @@ export default function LoginPage() {
     event.preventDefault();
     setIsSubmitting(true);
 
-    const response = await login(username, password);
+    const signupResponse = await signup({ name, username, password });
 
-    setIsSubmitting(false);
-
-    if (!response.success) {
-      toast.error(response.message || "Invalid username or password.");
+    if (!signupResponse.success) {
+      setIsSubmitting(false);
+      toast.error(signupResponse.message || "Failed to create account.");
       return;
     }
 
-    toast.success("Logged in successfully.");
+    const loginResponse = await login(username, password);
+    setIsSubmitting(false);
+
+    if (!loginResponse.success) {
+      toast.success("Account created. Please log in.");
+      router.replace("/login");
+      return;
+    }
+
+    toast.success("Account created successfully.");
     router.replace(nextPath);
     router.refresh();
   };
@@ -50,11 +59,23 @@ export default function LoginPage() {
     <>
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="Jane Doe"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            required
+          />
+        </div>
+
+        <div>
           <Label htmlFor="username">Username</Label>
           <Input
             id="username"
             type="text"
-            placeholder="your-username"
+            placeholder="jane-doe"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             required
@@ -66,22 +87,23 @@ export default function LoginPage() {
           <Input
             id="password"
             type="password"
-            placeholder="********"
+            placeholder="At least 6 characters"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
+            minLength={6}
             required
           />
         </div>
 
         <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
-          {isSubmitting ? "Signing In..." : "Sign In"}
+          {isSubmitting ? "Creating Account..." : "Create Account"}
         </Button>
       </form>
 
       <p className="text-sm text-center text-gray-500 mt-4">
-        Need an account?{" "}
-        <Link className="text-primary hover:underline" href="/signup">
-          Sign up
+        Already have an account?{" "}
+        <Link className="text-primary hover:underline" href="/login">
+          Sign in
         </Link>
       </p>
     </>

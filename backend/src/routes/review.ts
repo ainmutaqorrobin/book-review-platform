@@ -5,6 +5,8 @@ import {
   createBookReviewValidation,
   getBookReviewsValidation,
 } from "../validation/review";
+import { optionalAuth } from "../middlewares/auth";
+import { reviewCreateRateLimiter } from "../middlewares/rateLimiter";
 
 const router = Router();
 
@@ -17,6 +19,8 @@ router.get(
 
 router.post(
   "/:bookId",
+  reviewCreateRateLimiter,
+  optionalAuth,
   createBookReviewValidation,
   handleValidation,
   createBookReview

@@ -17,6 +17,7 @@ CREATE TABLE
         author VARCHAR(255) NOT NULL,
         description TEXT,
         cover_image_url TEXT,
+        owner_user_id INTEGER REFERENCES users (id) ON DELETE SET NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -36,5 +37,6 @@ CREATE TABLE
 
 -- indexes
 CREATE INDEX IF NOT EXISTS idx_books_title ON books (title);
+CREATE INDEX IF NOT EXISTS idx_books_owner_user_id ON books (owner_user_id);
 
 CREATE INDEX IF NOT EXISTS idx_reviews_book_id ON reviews (book_id);

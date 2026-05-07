@@ -43,8 +43,7 @@ export const createBookReview = async (
     if (book.rowCount === 0)
       throw new NotFoundError(`Book with ID ${bookId} not found`);
 
-    const { sentimentLabel, sentimentScore, summary, tags } =
-      await enrichReviewText(text);
+    const { sentimentScore, summary, tags } = await enrichReviewText(text);
 
     const newReview = await createReview({
       book_id: bookId,

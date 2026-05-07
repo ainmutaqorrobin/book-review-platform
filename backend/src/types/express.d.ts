@@ -1,7 +1,7 @@
-import { Role } from "../models/type";
+import { PersistedRole } from "../models/type";
 interface UserPayload {
   userId: number;
-  role: Role;
+  role: PersistedRole;
 }
 
 declare global {

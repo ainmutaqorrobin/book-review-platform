@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Review from "./review";
 import {
+  deleteBook,
   getBookById,
   BookDetail as Model,
   Review as ReviewModel,
@@ -14,12 +15,18 @@ import {
 import { FALLBACK_IMAGE } from "@/utils/const/image";
 import BackButton from "./back-button";
 import { Skeleton } from "../ui/skeleton";
+import { useAuth } from "../providers/auth-provider";
+import ConfirmationDialog from "./confirmation-dialog";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface BookDetailProps {
   bookId: number;
 }
 
 export default function BookDetail({ bookId }: BookDetailProps) {
+  const router = useRouter();
+  const { isLoading: authLoading, role, user } = useAuth();
   const [book, setBook] = useState<Model | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -69,16 +76,50 @@ export default function BookDetail({ bookId }: BookDetailProps) {
     author,
     description,
     cover_image_url,
+    owner_user_id,
     created_at,
     reviews,
   } = book;
+  const canManageBook =
+    !authLoading &&
+    (role === "admin" || (role === "user" && user?.id === owner_user_id));
+
+  const handleDelete = async () => {
+    const response = await deleteBook(id);
+
+    if (!response.success) {
+      toast.error(response.message || "Failed to delete book.");
+      return;
+    }
+
+    toast.success("Book deleted successfully.");
+    router.push("/books");
+    router.refresh();
+  };
 
   return (
     <>
       {/* Book Header Section */}
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-3xl font-semibold">{title}</h1>
-        <BackButton />
+        <div className="flex items-center gap-3">
+          {canManageBook && (
+            <>
+              <Link href={`/books/${id}/edit`}>
+                <Button variant="outline">Edit</Button>
+              </Link>
+              <ConfirmationDialog
+                title={`Delete "${title}"?`}
+                description="This action cannot be undone."
+                actionText="Confirm Delete"
+                onConfirm={handleDelete}
+              >
+                <Button variant="destructive">Delete</Button>
+              </ConfirmationDialog>
+            </>
+          )}
+          <BackButton />
+        </div>
       </div>
 
       {/* Book Card */}

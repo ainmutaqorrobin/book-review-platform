@@ -11,6 +11,7 @@ import { NotFoundError } from "../utils/notfoundError";
 import { createReview, getReviewsByBookId } from "../models/review";
 import pool from "../config/db";
 import { enrichReviewText } from "../mastra/agents/analyze-agent";
+import { AppError } from "../utils/appError";
 
 export const getBooks = async (
   req: Request,
@@ -55,6 +56,10 @@ export const createSingleBook = async (
   next: NextFunction
 ) => {
   try {
+    if (!req.user) {
+      throw new AppError("Authentication required", 401);
+    }
+
     const { title, author, description, cover_image_url } = req.body;
 
     const newBook = await createBook({
@@ -62,6 +67,7 @@ export const createSingleBook = async (
       author,
       description,
       cover_image_url,
+      owner_user_id: req.user.userId,
     });
 
     return sendResponse(res, 201, "Book created successfully", newBook);
@@ -87,8 +93,7 @@ export const createBookReview = async (
       throw new NotFoundError(`Book with ID ${bookId} not found`);
     }
 
-    const { sentimentLabel, sentimentScore, summary, tags } =
-      await enrichReviewText(text);
+    const { sentimentScore, summary, tags } = await enrichReviewText(text);
 
     // Create review with enriched data
     const newReview = await createReview({

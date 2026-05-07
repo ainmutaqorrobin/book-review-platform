@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import {
   Form,
@@ -16,6 +17,7 @@ import { createReview } from "@/utils/api/reviews";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "../providers/auth-provider";
 
 interface ReviewFormData {
   reviewer_name: string;
@@ -29,6 +31,7 @@ interface IProps {
 
 export default function ReviewForm({ bookId }: IProps) {
   const router = useRouter();
+  const { user } = useAuth();
 
   const form = useForm<ReviewFormData>({
     defaultValues: {
@@ -42,6 +45,12 @@ export default function ReviewForm({ bookId }: IProps) {
   const { handleSubmit, formState } = form;
   const { isSubmitting } = formState;
 
+  useEffect(() => {
+    if (user?.name) {
+      form.setValue("reviewer_name", user.name);
+    }
+  }, [form, user?.name]);
+
   const onSubmit = async (data: ReviewFormData) => {
     try {
       const response = await createReview(data, bookId);
@@ -51,7 +60,7 @@ export default function ReviewForm({ bookId }: IProps) {
       } else toast.error(response.message);
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error("Something went wrong.");
     }
   };
 

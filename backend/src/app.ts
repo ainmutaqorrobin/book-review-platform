@@ -58,7 +58,7 @@ app.get("/", (req, res) => {
   res.json({ message: "📚 Book Review API is running!!" });
 });
 
-app.use(AuthRouter);
+app.use("/auth", AuthRouter);
 app.use("/books", BookRouter);
 app.use("/reviews", ReviewRouter);
 app.use("/search", SearchRouter);

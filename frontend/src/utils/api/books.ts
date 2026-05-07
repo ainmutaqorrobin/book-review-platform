@@ -6,6 +6,7 @@ export interface Book {
   author: string;
   description?: string;
   cover_image_url?: string;
+  owner_user_id?: number | null;
   created_at?: string;
 }
 
@@ -15,6 +16,7 @@ export interface BookDetail {
   author: string;
   description: string;
   cover_image_url: string;
+  owner_user_id: number | null;
   created_at: string;
   reviews: Review[];
 }

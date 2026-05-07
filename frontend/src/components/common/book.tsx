@@ -14,6 +14,7 @@ import Link from "next/link";
 import { FALLBACK_IMAGE } from "@/utils/const/image";
 import { toast } from "sonner";
 import ConfirmationDialog from "./confirmation-dialog";
+import { useAuth } from "../providers/auth-provider";
 
 interface IProps {
   book: Model;
@@ -22,18 +23,20 @@ interface IProps {
 
 export default function Book({ book, onBookDeleteCallback }: IProps) {
   const { author, id, title, cover_image_url, created_at, description } = book;
+  const { isLoading, role, user } = useAuth();
+  const canManageBook =
+    !isLoading &&
+    (role === "admin" || (role === "user" && user?.id === book.owner_user_id));
 
   const handleDelete = async () => {
-    try {
-      const res = await deleteBook(id);
-      if (res.success) {
-        toast.success("Book deleted successfully");
-        onBookDeleteCallback();
-      }
-    } catch (error) {
-      console.error(error);
-      toast.error(error);
+    const res = await deleteBook(id);
+    if (res.success) {
+      toast.success("Book deleted successfully");
+      onBookDeleteCallback();
+      return;
     }
+
+    toast.error(res.message || "Failed to delete book.");
   };
 
   return (
@@ -60,22 +63,35 @@ export default function Book({ book, onBookDeleteCallback }: IProps) {
         </p>
       </CardContent>
 
-      <CardFooter className="flex justify-between px-6 py-4">
-        <ConfirmationDialog
-          title={`Delete "${title}"?`}
-          description="This action cannot be undone."
-          actionText="Confirm Delete"
-          onConfirm={handleDelete}
-        >
-          <Button
-            variant="destructive"
-            className="w-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg"
-          >
-            Delete
-          </Button>
-        </ConfirmationDialog>
-
-        <Link href={`/books/${id}`}>
+      <CardFooter className="flex justify-between gap-3 px-6 py-4">
+        <div className="flex gap-3">
+          {canManageBook && (
+            <>
+              <Link href={`/books/${id}/edit`}>
+                <Button
+                  variant="outline"
+                  className="w-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+                >
+                  Edit
+                </Button>
+              </Link>
+              <ConfirmationDialog
+                title={`Delete "${title}"?`}
+                description="This action cannot be undone."
+                actionText="Confirm Delete"
+                onConfirm={handleDelete}
+              >
+                <Button
+                  variant="destructive"
+                  className="w-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg"
+                >
+                  Delete
+                </Button>
+              </ConfirmationDialog>
+            </>
+          )}
+        </div>
+        <Link href={`/books/${id}`} className="ml-auto">
           <Button
             variant="secondary"
             className="w-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg"

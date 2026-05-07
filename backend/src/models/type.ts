@@ -1,12 +1,17 @@
 export enum Role {
+  GUEST = "guest",
   USER = "user",
   ADMIN = "admin",
 }
+
+export type PersistedRole = Role.USER | Role.ADMIN;
+
 export interface Book {
   title: string;
   author: string;
   description?: string;
   cover_image_url?: string;
+  owner_user_id?: number | null;
 }
 
 export interface Review {
@@ -24,6 +29,6 @@ export interface User {
   username: string;
   password_hash: string;
   name: string;
-  role: Role;
+  role: PersistedRole;
   created_at: Date;
 }

@@ -14,12 +14,12 @@ export const signup = async (
   next: NextFunction
 ) => {
   try {
-    const { username, password, name, role } = req.body;
+    const { username, password, name } = req.body;
 
     const existedUser = await findUserByUsername(username);
     if (existedUser) throw new AppError("Username already taken", 400);
 
-    const user = await createUser(username, password, name, role);
+    const user = await createUser(username, password, name);
     return sendResponse(res, 201, "User sucessfully", user);
   } catch (err) {
     next(err);

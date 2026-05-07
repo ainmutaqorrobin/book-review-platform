@@ -2,9 +2,12 @@
 
 import { ReactNode, useState } from "react";
 import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "@/components/providers/auth-provider";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 interface RootLayoutProps {
   children: ReactNode;
@@ -17,6 +20,23 @@ export const metadata = {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const { isAuthenticated, isLoading, logout, role, user } = useAuth();
+  const canManageBooks = role === "admin" || role === "user";
+
+  const handleLogout = async () => {
+    const response = await logout();
+
+    if (response.success) {
+      toast.success("Logged out");
+      router.push("/");
+      router.refresh();
+      setIsOpen(false);
+      return;
+    }
+
+    toast.error(response.message || "Failed to log out.");
+  };
 
   return (
     <html lang="en">
@@ -30,18 +50,46 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
             {/* Desktop Nav */}
             <nav className="hidden md:flex gap-4">
-              <Link
-                href="/create-book"
-                className={buttonVariants({ variant: "ghost" })}
-              >
-                Create Your Book
-              </Link>
+              {canManageBooks && (
+                <Link
+                  href="/create-book"
+                  className={buttonVariants({ variant: "ghost" })}
+                >
+                  Create Your Book
+                </Link>
+              )}
               <Link
                 href="/books"
                 className={buttonVariants({ variant: "ghost" })}
               >
                 Books List
               </Link>
+              {!isLoading && !isAuthenticated && (
+                <>
+                  <Link
+                    href="/login"
+                    className={buttonVariants({ variant: "ghost" })}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className={buttonVariants({ variant: "default" })}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+              {!isLoading && isAuthenticated && (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">
+                    {user?.name} ({role})
+                  </span>
+                  <Button variant="outline" onClick={handleLogout}>
+                    Logout
+                  </Button>
+                </div>
+              )}
             </nav>
 
             {/* Mobile Menu Button */}
@@ -65,13 +113,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
             `}
           >
             <nav className="flex flex-col items-start p-4 space-y-3">
-              <Link
-                href="/create-book"
-                className={buttonVariants({ variant: "ghost" })}
-                onClick={() => setIsOpen(false)}
-              >
-                Create Your Book
-              </Link>
+              {canManageBooks && (
+                <Link
+                  href="/create-book"
+                  className={buttonVariants({ variant: "ghost" })}
+                  onClick={() => setIsOpen(false)}
+                >
+                  Create Your Book
+                </Link>
+              )}
               <Link
                 href="/books"
                 className={buttonVariants({ variant: "ghost" })}
@@ -79,6 +129,29 @@ export default function RootLayout({ children }: RootLayoutProps) {
               >
                 Books List
               </Link>
+              {!isLoading && !isAuthenticated && (
+                <>
+                  <Link
+                    href="/login"
+                    className={buttonVariants({ variant: "ghost" })}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className={buttonVariants({ variant: "default" })}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+              {!isLoading && isAuthenticated && (
+                <Button variant="outline" onClick={handleLogout}>
+                  Logout
+                </Button>
+              )}
             </nav>
           </div>
         </header>

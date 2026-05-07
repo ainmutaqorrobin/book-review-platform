@@ -49,9 +49,15 @@ View [API Documentation](https://documenter.getpostman.com/view/24966843/2sB3Wnx
 
 1. Ensure you have PostgreSQL configured and the required environment variables set (e.g., `DATABASE_URL`, `PORT`, etc.).
 2. Run database migrations or apply your schema.
-3. Seed dummy data when needed with `npm run seed`. This runs `db/sample.sql` against `DATABASE_URL`.
+3. Seed dummy data when needed with `npm run seed`. This runs `db/sample.sql` against `DATABASE_URL` and creates or updates an admin user.
 4. Start the server (e.g., `npm run dev` for development or `npm run start` for production build).
 5. Use the endpoints above to interact with the API.
+
+For local development, the default seeded admin credentials are:
+- Username: `admin`
+- Password: `admin12345`
+
+These can be overridden with `ADMIN_SEED_USERNAME`, `ADMIN_SEED_NAME`, and `ADMIN_SEED_PASSWORD`.
 
 ---
 

@@ -40,6 +40,11 @@ Book Review Platform is a full-stack app for browsing books, writing reviews, an
    docker compose exec backend npm run seed
    ```
 
+   This also creates or updates a seeded admin account. With the default local
+   `.env.example` values, the credentials are:
+   - Username: `admin`
+   - Password: `admin12345`
+
 The local compose file now runs:
 - `frontend` from `./frontend` in development mode with hot reload
 - `backend` from `./backend` in development mode with hot reload
@@ -86,6 +91,11 @@ It does the following:
 
 - `.env.example`: local Docker and local browser settings
 - `.env.production.example`: production values for the VPS copy at `.env.production`
+
+Admin seed configuration is also environment-driven:
+- `ADMIN_SEED_USERNAME`
+- `ADMIN_SEED_NAME`
+- `ADMIN_SEED_PASSWORD`
 
 Keep real secrets out of git. `.env.production` should exist only on the VPS.
 

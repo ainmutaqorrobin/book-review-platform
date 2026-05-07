@@ -1,15 +1,41 @@
-import { fetcher } from "@/lib/fetcher";
+import { ApiResponse, fetcher } from "@/lib/fetcher";
 
-export function getCurrentUser() {
-  return fetcher("/auth/me");
+export type Role = "guest" | "user" | "admin";
+
+export interface AuthUser {
+  id: number;
+  username: string;
+  name: string;
+  role: Exclude<Role, "guest">;
+  created_at: string;
 }
 
-export function logout() {
-  return fetcher("/auth/logout", { method: "POST" });
+export interface SignupPayload {
+  username: string;
+  name: string;
+  password: string;
 }
 
-export function login(username: string, password: string) {
-  return fetcher("/auth/login", {
+export function getCurrentUser(): Promise<ApiResponse<AuthUser>> {
+  return fetcher<AuthUser>("/auth/me");
+}
+
+export function signup(payload: SignupPayload): Promise<ApiResponse<AuthUser>> {
+  return fetcher<AuthUser>("/auth/signup", {
+    method: "POST",
+    data: payload,
+  });
+}
+
+export function logout(): Promise<ApiResponse<null>> {
+  return fetcher<null>("/auth/logout", { method: "POST" });
+}
+
+export function login(
+  username: string,
+  password: string
+): Promise<ApiResponse<null>> {
+  return fetcher<null>("/auth/login", {
     method: "POST",
     data: { username, password },
   });

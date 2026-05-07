@@ -1,12 +1,12 @@
 import pool from "../config/db";
 import { hash } from "bcrypt";
-import { Role, User } from "./type";
+import { PersistedRole, Role, User } from "./type";
 
 export const createUser = async (
   username: string,
   password: string,
   name: string,
-  role: Role = Role.USER
+  role: PersistedRole = Role.USER
 ): Promise<User> => {
   const password_hash = await hash(password, 10);
 

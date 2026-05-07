@@ -1,5 +1,6 @@
 import "../globals.css";
 import { ReactNode } from "react";
+import { AuthProvider } from "@/components/providers/auth-provider";
 import RootLayout from "@/components/landing-page/main-layout";
 interface RootLayoutProps {
   children: ReactNode;
@@ -11,5 +12,9 @@ export const metadata = {
 };
 
 export default function LayoutPage({ children }: RootLayoutProps) {
-  return <RootLayout>{children}</RootLayout>;
+  return (
+    <AuthProvider>
+      <RootLayout>{children}</RootLayout>
+    </AuthProvider>
+  );
 }
