@@ -7,9 +7,5 @@ interface EditBookPageProps {
 export default async function EditBookPage({ params }: EditBookPageProps) {
   const { id } = await params;
 
-  return (
-    <main>
-      <BookForm mode="edit" bookId={Number(id)} />
-    </main>
-  );
+  return <BookForm mode="edit" bookId={Number(id)} />;
 }

@@ -1,65 +1,80 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Separator } from "../ui/separator";
-import { Badge } from "../ui/badge";
+import { Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+const features = [
+  {
+    title: "Review Summaries",
+    description: "Condense long thoughts into short reading notes you can scan later.",
+  },
+  {
+    title: "Sentiment Clarity",
+    description: "See the emotional signal behind a review without rewriting it from scratch.",
+  },
+  {
+    title: "Smarter Tags",
+    description: "Generate useful labels that make the collection easier to navigate.",
+  },
+  {
+    title: "Saved Context",
+    description: "Keep AI output alongside each review so it remains part of your archive.",
+  },
+];
 
 export default function AISection() {
-  const features = [
-    {
-      title: "Summarize Reviews",
-      description: "Quickly summarize your review text for easier reading.",
-      color: "blue",
-    },
-    {
-      title: "Analyze Sentiment",
-      description: "Receive sentiment score or label for your review.",
-      color: "green",
-    },
-    {
-      title: "Suggest Tags",
-      description: "Get relevant tags to make your review discoverable.",
-      color: "purple",
-    },
-    {
-      title: "Store AI Data",
-      description: "AI-generated insights are saved in the database.",
-      color: "orange",
-    },
-  ];
-
   return (
-    <section className="mt-16 max-w-5xl mx-auto px-4 space-y-8 text-center">
-      <h2 className="text-3xl font-bold">Powered by Mastra AI</h2>
-      <p className="text-muted-foreground">
-        When you submit a review, Mastra AI will enhance it in several ways:
-      </p>
-      <Separator className="my-4" />
+    <section className="grid gap-8 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
+      <div className="rounded-[2rem] border border-stone-900/10 bg-[#201814] p-8 text-stone-100 shadow-[0_24px_70px_rgba(42,26,18,0.24)]">
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/6 px-3 py-1 text-[11px] uppercase tracking-[0.24em] text-stone-300">
+          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+          AI Support
+        </div>
+        <h2 className="mt-6 font-[family-name:Georgia,serif] text-4xl leading-tight text-stone-50">
+          Quiet intelligence for better review writing.
+        </h2>
+        <p className="mt-4 max-w-md text-sm leading-7 text-stone-300">
+          Mastra AI adds structure without taking over the page. Use it to make
+          your notes more discoverable and easier to revisit later.
+        </p>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {features.map((feature) => (
-          <Card
-            key={feature.title}
-            className="hover:shadow-lg transition-shadow"
-          >
-            <CardHeader>
-              <CardTitle className="flex items-center justify-center gap-2">
-                {feature.title}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                {feature.description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        <div className="mt-8 rounded-[1.5rem] border border-[#b98a63]/30 bg-[#b98a63]/10 p-5">
+          <p className="text-[11px] uppercase tracking-[0.22em] text-[#e6c9a9]">
+            Built for reflection
+          </p>
+          <p className="mt-3 text-sm leading-6 text-stone-100">
+            AI should sharpen your notes, not replace your judgment. This flow
+            is designed to preserve the reader’s voice.
+          </p>
+        </div>
+
+        <Button
+          asChild
+          size="lg"
+          className="mt-8 h-12 rounded-full bg-stone-50 px-6 text-stone-900 hover:bg-stone-200"
+        >
+          <Link href="/books">Start Exploring Books</Link>
+        </Button>
       </div>
 
-      <div className="flex justify-center mt-8">
-        <Link href="/books">
-          <Button size="lg">Start Exploring Books</Button>
-        </Link>
+      <div className="grid gap-5 sm:grid-cols-2">
+        {features.map((feature, index) => (
+          <article
+            key={feature.title}
+            className={`rounded-[2rem] border border-stone-900/10 p-6 shadow-[0_18px_40px_rgba(64,38,24,0.08)] ${
+              index === 0 || index === 3 ? "bg-white/70" : "bg-[#efe0cf]"
+            }`}
+          >
+            <p className="text-[11px] uppercase tracking-[0.24em] text-stone-500">
+              Capability {index + 1}
+            </p>
+            <h3 className="mt-4 font-[family-name:Georgia,serif] text-2xl leading-tight text-stone-900">
+              {feature.title}
+            </h3>
+            <p className="mt-3 text-sm leading-7 text-stone-600">
+              {feature.description}
+            </p>
+          </article>
+        ))}
       </div>
     </section>
   );

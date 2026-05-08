@@ -2,21 +2,16 @@
 
 import { ReactNode, useState } from "react";
 import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Toaster } from "@/components/ui/sonner";
-import { Menu, X } from "lucide-react";
-import { useAuth } from "@/components/providers/auth-provider";
+import { Menu, Sparkles, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
+import { useAuth } from "@/components/providers/auth-provider";
 
 interface RootLayoutProps {
   children: ReactNode;
 }
-
-export const metadata = {
-  title: "Book Review Platform",
-  description: "Discover and review books you love",
-};
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,131 +19,159 @@ export default function RootLayout({ children }: RootLayoutProps) {
   const { isAuthenticated, isLoading, logout, role, user } = useAuth();
   const canManageBooks = role === "admin" || role === "user";
 
+  const navLinkClassName = buttonVariants({
+    variant: "ghost",
+    size: "sm",
+  });
+
   const handleLogout = async () => {
     const response = await logout();
 
-    if (response.success) {
-      toast.success("Logged out");
-      router.push("/");
-      router.refresh();
-      setIsOpen(false);
+    if (!response.success) {
+      toast.error(response.message || "Failed to log out.");
       return;
     }
 
-    toast.error(response.message || "Failed to log out.");
+    toast.success("Logged out");
+    router.push("/");
+    router.refresh();
+    setIsOpen(false);
   };
 
   return (
     <html lang="en">
-      <body className="bg-background text-foreground">
-        {/* Navbar */}
-        <header className="border-b bg-card sticky top-0 z-50">
-          <div className="container mx-auto flex justify-between items-center py-4 px-6">
-            <Link href="/" className="text-2xl font-bold">
-              BookReview
+      <body className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(180,120,74,0.22),_transparent_28%),linear-gradient(180deg,_#f8f2e8_0%,_#ede0cf_100%)] text-stone-900">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[70] focus:rounded-full focus:bg-stone-900 focus:px-4 focus:py-2 focus:text-stone-50"
+        >
+          Skip to main content
+        </a>
+
+        <header className="sticky top-0 z-50 border-b border-stone-900/10 bg-[#fffaf2]/80 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+            <Link href="/" className="group inline-flex items-center gap-3">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-stone-900/10 bg-[#201814] text-[#f8f2e8] shadow-[0_10px_30px_rgba(32,24,20,0.18)]">
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.32em] text-stone-500">
+                  BookReview
+                </p>
+                <p className="font-[family-name:Georgia,serif] text-xl text-stone-900 transition-colors group-hover:text-[#7c5233]">
+                  Editorial Shelf
+                </p>
+              </div>
             </Link>
 
-            {/* Desktop Nav */}
-            <nav className="hidden md:flex gap-4">
+            <nav className="hidden items-center gap-2 md:flex">
               {canManageBooks && (
-                <Link
-                  href="/create-book"
-                  className={buttonVariants({ variant: "ghost" })}
-                >
-                  Create Your Book
+                <Link href="/create-book" className={navLinkClassName}>
+                  Add a Book
                 </Link>
               )}
-              <Link
-                href="/books"
-                className={buttonVariants({ variant: "ghost" })}
-              >
-                Books List
+              <Link href="/books" className={navLinkClassName}>
+                Browse Books
               </Link>
               {!isLoading && !isAuthenticated && (
                 <>
-                  <Link
-                    href="/login"
-                    className={buttonVariants({ variant: "ghost" })}
-                  >
-                    Login
+                  <Link href="/login" className={navLinkClassName}>
+                    Log In
                   </Link>
                   <Link
                     href="/signup"
-                    className={buttonVariants({ variant: "default" })}
+                    className="inline-flex h-9 items-center justify-center rounded-full bg-stone-900 px-5 text-sm font-medium text-stone-50 shadow-[0_12px_30px_rgba(42,26,18,0.18)] transition-colors hover:bg-stone-800"
                   >
-                    Sign Up
+                    Join Free
                   </Link>
                 </>
               )}
               {!isLoading && isAuthenticated && (
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">
-                    {user?.name} ({role})
-                  </span>
-                  <Button variant="outline" onClick={handleLogout}>
+                <div className="flex items-center gap-3 rounded-full border border-stone-900/8 bg-white/60 px-4 py-2">
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-stone-900">
+                      {user?.name}
+                    </p>
+                    <p className="text-[11px] uppercase tracking-[0.24em] text-stone-500">
+                      {role}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    className="rounded-full border-stone-300 bg-transparent text-stone-700 hover:border-stone-500 hover:bg-stone-100"
+                    onClick={handleLogout}
+                  >
                     Logout
                   </Button>
                 </div>
               )}
             </nav>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden p-2 rounded hover:bg-accent focus:outline-none"
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsOpen((currentState) => !currentState)}
+              aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
+              className="rounded-full border border-stone-900/10 bg-white/60 md:hidden"
             >
-              {isOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+              {isOpen ? (
+                <X className="h-5 w-5" aria-hidden="true" />
+              ) : (
+                <Menu className="h-5 w-5" aria-hidden="true" />
+              )}
+            </Button>
           </div>
 
-          {/* Mobile Dropdown Menu with smooth transition */}
           <div
-            className={`
-              md:hidden
-              overflow-hidden
-              transition-[max-height,opacity]
-              duration-300
-              ease-in-out
-              ${isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"}
-            `}
+            id="mobile-navigation"
+            className={`overflow-hidden border-t border-stone-900/8 bg-[#fffaf2] transition-[max-height,opacity] duration-300 ease-in-out md:hidden ${
+              isOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+            }`}
           >
-            <nav className="flex flex-col items-start p-4 space-y-3">
+            <nav className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 sm:px-6">
               {canManageBooks && (
                 <Link
                   href="/create-book"
-                  className={buttonVariants({ variant: "ghost" })}
+                  className={navLinkClassName}
                   onClick={() => setIsOpen(false)}
                 >
-                  Create Your Book
+                  Add a Book
                 </Link>
               )}
               <Link
                 href="/books"
-                className={buttonVariants({ variant: "ghost" })}
+                className={navLinkClassName}
                 onClick={() => setIsOpen(false)}
               >
-                Books List
+                Browse Books
               </Link>
               {!isLoading && !isAuthenticated && (
                 <>
                   <Link
                     href="/login"
-                    className={buttonVariants({ variant: "ghost" })}
+                    className={navLinkClassName}
                     onClick={() => setIsOpen(false)}
                   >
-                    Login
+                    Log In
                   </Link>
                   <Link
                     href="/signup"
-                    className={buttonVariants({ variant: "default" })}
+                    className="inline-flex h-10 items-center justify-center rounded-full bg-stone-900 px-5 text-sm font-medium text-stone-50 shadow-[0_12px_30px_rgba(42,26,18,0.18)] transition-colors hover:bg-stone-800"
                     onClick={() => setIsOpen(false)}
                   >
-                    Sign Up
+                    Join Free
                   </Link>
                 </>
               )}
               {!isLoading && isAuthenticated && (
-                <Button variant="outline" onClick={handleLogout}>
+                <Button
+                  variant="outline"
+                  className="rounded-full border-stone-300 bg-transparent text-stone-700 hover:border-stone-500 hover:bg-stone-100"
+                  onClick={handleLogout}
+                >
                   Logout
                 </Button>
               )}
@@ -156,8 +179,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </div>
         </header>
 
-        {/* Main content */}
-        <main className="container mx-auto px-6 py-10">{children}</main>
+        <main id="main-content" className="px-4 pb-16 pt-8 sm:px-6 lg:px-8">
+          {children}
+        </main>
 
         <Toaster />
       </body>

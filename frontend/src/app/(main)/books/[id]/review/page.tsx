@@ -7,9 +7,5 @@ interface IProps {
 export default async function CreateReviewPage({ params }: IProps) {
   const { id } = await params;
 
-  return (
-    <main>
-      <ReviewForm bookId={id} />
-    </main>
-  );
+  return <ReviewForm bookId={id} />;
 }

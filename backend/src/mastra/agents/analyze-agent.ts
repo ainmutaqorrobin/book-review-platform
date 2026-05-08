@@ -2,7 +2,7 @@ import { Agent } from "@mastra/core/agent";
 
 export const analyzeAgents = new Agent({
   name: "analyze-agent",
-  model: "openai/gpt-4-turbo",
+  model: "openai/gpt-5.2-codex",
   instructions: "You are now an expert analyzer",
 });
 
@@ -46,7 +46,7 @@ JSON Response:`;
     } catch (e) {
       console.error(
         "Failed to parse AI output for sentiment/tags:",
-        sentimentRes.text
+        sentimentRes.text,
       );
       console.error("Parse error:", e);
     }

@@ -1,24 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import Review from "./review";
-import {
-  deleteBook,
-  getBookById,
-  BookDetail as Model,
-  Review as ReviewModel,
-} from "@/utils/api/books";
-import { FALLBACK_IMAGE } from "@/utils/const/image";
-import BackButton from "./back-button";
-import { Skeleton } from "../ui/skeleton";
-import { useAuth } from "../providers/auth-provider";
-import ConfirmationDialog from "./confirmation-dialog";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "../ui/skeleton";
+import { deleteBook, getBookById, BookDetail as Model, Review as ReviewModel } from "@/utils/api/books";
+import { FALLBACK_IMAGE } from "@/utils/const/image";
+import { formatDate } from "@/lib/format";
+import ConfirmationDialog from "./confirmation-dialog";
+import BackButton from "./back-button";
+import Review from "./review";
+import { useAuth } from "../providers/auth-provider";
 
 interface BookDetailProps {
   bookId: number;
@@ -35,36 +30,38 @@ export default function BookDetail({ bookId }: BookDetailProps) {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await getBookById(bookId);
-        if (res.success && res.data) {
-          setBook(res.data);
-        } else {
-          setError(res.message || "Book not found.");
+        const response = await getBookById(bookId);
+
+        if (response.success && response.data) {
+          setBook(response.data);
+          setError(null);
+          return;
         }
-      } catch (err) {
+
+        setError(response.message || "Book not found.");
+      } catch {
         setError("An error occurred while fetching the book.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
+    void fetchData();
   }, [bookId]);
 
   if (loading) {
     return (
-      <div className="space-y-6 p-6">
-        <Skeleton className="w-full h-64 rounded-md" />
-        <Skeleton className="w-3/4 h-8 rounded-md" />
-        <Skeleton className="w-1/2 h-6 rounded-md" />
-        <Skeleton className="w-full h-40 rounded-md" />
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-6">
+        <Skeleton className="h-16 rounded-[1.75rem]" />
+        <Skeleton className="h-[420px] rounded-[2rem]" />
+        <Skeleton className="h-52 rounded-[1.75rem]" />
       </div>
     );
   }
 
   if (error || !book) {
     return (
-      <div className="p-6 text-center text-red-500">
+      <div className="mx-auto w-full max-w-5xl rounded-[1.75rem] border border-red-300/70 bg-red-50 px-5 py-6 text-red-700">
         {error || "Book not found."}
       </div>
     );
@@ -98,23 +95,39 @@ export default function BookDetail({ bookId }: BookDetailProps) {
   };
 
   return (
-    <>
-      {/* Book Header Section */}
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-3xl font-semibold">{title}</h1>
-        <div className="flex items-center gap-3">
+    <section className="mx-auto flex w-full max-w-7xl flex-col gap-8">
+      <div className="flex flex-col gap-4 rounded-[1.75rem] border border-stone-900/10 bg-white/60 p-5 shadow-[0_18px_40px_rgba(64,38,24,0.08)] lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-3">
+          <p className="text-xs uppercase tracking-[0.3em] text-stone-500">
+            Book Detail
+          </p>
+          <h1 className="font-[family-name:Georgia,serif] text-4xl leading-tight text-stone-900 sm:text-5xl">
+            {title}
+          </h1>
+          <p className="text-sm uppercase tracking-[0.14em] text-stone-600">
+            by {author}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
           {canManageBook && (
             <>
-              <Link href={`/books/${id}/edit`}>
-                <Button variant="outline">Edit</Button>
-              </Link>
+              <Button
+                asChild
+                variant="outline"
+                className="h-10 rounded-full border-stone-300 bg-[#fffaf2] px-5 text-stone-700 hover:border-stone-500 hover:bg-white"
+              >
+                <Link href={`/books/${id}/edit`}>Edit</Link>
+              </Button>
               <ConfirmationDialog
                 title={`Delete "${title}"?`}
                 description="This action cannot be undone."
                 actionText="Confirm Delete"
                 onConfirm={handleDelete}
               >
-                <Button variant="destructive">Delete</Button>
+                <Button variant="destructive" className="h-10 rounded-full px-5">
+                  Delete
+                </Button>
               </ConfirmationDialog>
             </>
           )}
@@ -122,52 +135,80 @@ export default function BookDetail({ bookId }: BookDetailProps) {
         </div>
       </div>
 
-      {/* Book Card */}
-      <Card className="overflow-hidden hover:shadow-lg transition-all duration-200 mb-8 flex flex-col">
-        <div className="relative w-full h-64 overflow-hidden rounded-md">
-          <Image
-            src={cover_image_url || FALLBACK_IMAGE}
-            alt={title}
-            fill
-            className="object-cover w-full h-full"
-            sizes="(max-width: 768px) 100vw, 33vw"
-          />
+      <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
+        <article className="overflow-hidden rounded-[2rem] border border-stone-900/10 bg-[#201814] text-stone-100 shadow-[0_24px_70px_rgba(42,26,18,0.24)]">
+          <div className="relative h-[420px]">
+            <Image
+              src={cover_image_url || FALLBACK_IMAGE}
+              alt={title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 40vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#201814] via-[#201814]/10 to-transparent" />
+          </div>
+          <div className="space-y-4 p-6">
+            <p className="text-[11px] uppercase tracking-[0.24em] text-stone-400">
+              Added {formatDate(created_at || "")}
+            </p>
+            <p className="text-sm leading-7 text-stone-300">
+              {description || "No description has been added for this book yet."}
+            </p>
+          </div>
+        </article>
+
+        <div className="space-y-6">
+          <article className="rounded-[2rem] border border-stone-900/10 bg-white/65 p-6 shadow-[0_18px_40px_rgba(64,38,24,0.08)]">
+            <p className="text-xs uppercase tracking-[0.28em] text-stone-500">
+              Editorial Note
+            </p>
+            <h2 className="mt-4 font-[family-name:Georgia,serif] text-3xl text-stone-900">
+              Why this title belongs on the shelf.
+            </h2>
+            <p className="mt-4 text-sm leading-7 text-stone-600">
+              Use this page to read the book’s description, revisit its review
+              history, and add your own perspective when it deserves one.
+            </p>
+          </article>
+
+          <div className="rounded-[2rem] border border-stone-900/10 bg-[#fffaf2]/88 p-6 shadow-[0_18px_40px_rgba(64,38,24,0.08)]">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs uppercase tracking-[0.28em] text-stone-500">
+                  Reader Responses
+                </p>
+                <h2 className="mt-2 font-[family-name:Georgia,serif] text-3xl text-stone-900">
+                  Reviews
+                </h2>
+              </div>
+              <Button
+                asChild
+                variant="outline"
+                className="h-11 rounded-full border-stone-300 bg-white px-5 text-stone-700 hover:border-stone-500 hover:bg-stone-50"
+              >
+                <Link href={`/books/${id}/review`}>Add Review</Link>
+              </Button>
+            </div>
+
+            <div className="mt-6 space-y-4">
+              {reviews.length === 0 ? (
+                <div className="rounded-[1.5rem] border border-stone-900/8 bg-white/60 px-5 py-8 text-center text-stone-600">
+                  <p className="font-[family-name:Georgia,serif] text-2xl text-stone-900">
+                    No reviews yet.
+                  </p>
+                  <p className="mt-2 text-sm leading-7">
+                    Be the first reader to add context to this title.
+                  </p>
+                </div>
+              ) : (
+                reviews.map((review: ReviewModel) => (
+                  <Review key={review.id} review={review} />
+                ))
+              )}
+            </div>
+          </div>
         </div>
-
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold">{title}</CardTitle>
-          <p className="text-sm text-muted-foreground">by {author}</p>
-        </CardHeader>
-
-        <CardContent className="grow">
-          <p className="text-sm text-gray-700 mb-4">{description}</p>
-          <p className="text-xs text-gray-500">
-            Added on {new Date(created_at || "").toLocaleDateString()}
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* Reviews Section Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Reviews</h2>
-        <Link href={`/books/${id}/review`} passHref>
-          <Button
-            variant="outline"
-            className="w-auto transition-transform duration-200 hover:scale-105 hover:shadow-lg"
-          >
-            Add Review
-          </Button>
-        </Link>
       </div>
-
-      {/* Reviews List */}
-      <section>
-        {reviews.length === 0 ? (
-          <p className="text-gray-500">No reviews yet.</p>
-        ) : (
-          reviews.map((r: ReviewModel) => <Review key={r.id} review={r} />)
-        )}
-      </section>
-    </>
+    </section>
   );
 }

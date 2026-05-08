@@ -1,9 +1,5 @@
 import BookForm from "@/components/form/book";
 
 export default function CreateBookPage() {
-  return (
-    <main>
-      <BookForm mode="create" />
-    </main>
-  );
+  return <BookForm mode="create" />;
 }

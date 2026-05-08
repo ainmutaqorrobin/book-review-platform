@@ -1,16 +1,16 @@
 "use client";
 
-import React, { ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import {
   AlertDialog,
-  AlertDialogTrigger,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
   AlertDialogDescription,
   AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 interface ConfirmationDialogProps {
@@ -18,7 +18,7 @@ interface ConfirmationDialogProps {
   description?: string;
   actionText: string;
   onConfirm: () => Promise<void> | void;
-  children: ReactNode; // trigger, e.g. a button
+  children: ReactNode;
 }
 
 export default function ConfirmationDialog({
@@ -56,7 +56,7 @@ export default function ConfirmationDialog({
             disabled={isLoading}
             className="bg-destructive text-white hover:bg-destructive/90"
           >
-            {isLoading ? "Processing…" : actionText}
+            {isLoading ? "Processing\u2026" : actionText}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

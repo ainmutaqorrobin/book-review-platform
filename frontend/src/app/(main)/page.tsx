@@ -1,18 +1,13 @@
 import AISection from "@/components/landing-page/ai-section";
-import HeroSection from "@/components/landing-page/hero-section";
 import FeaturesSection from "@/components/landing-page/features-section";
+import HeroSection from "@/components/landing-page/hero-section";
 
 export default function HomePage() {
   return (
-    <section className="text-center py-20 space-y-16">
-      {/* Hero Section */}
+    <div className="mx-auto flex w-full max-w-7xl flex-col gap-20 pb-8 pt-4 sm:gap-24">
       <HeroSection />
-
-      {/* Features Section */}
       <FeaturesSection />
-
-      {/* AI Section */}
       <AISection />
-    </section>
+    </div>
   );
 }

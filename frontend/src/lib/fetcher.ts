@@ -9,7 +9,7 @@ export interface ApiResponse<T> {
 export async function fetcher<T>(
   path: string,
   options: AxiosRequestConfig = {},
-  fallbackData?: T
+  fallbackData?: T,
 ): Promise<ApiResponse<T>> {
   const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -28,8 +28,6 @@ export async function fetcher<T>(
 
     return response.data as ApiResponse<T>;
   } catch (error: any) {
-    console.error("❌ API Error:", error?.response?.data || error.message);
-
     return {
       success: false,
       message: error?.response?.data?.message || "Backend not reachable",

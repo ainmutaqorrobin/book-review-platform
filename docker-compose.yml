@@ -22,79 +22,79 @@ services:
       retries: 5
       start_period: 10s
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "${BACKEND_PORT:-4000}:4000"
-    environment:
-      PORT: 4000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-bookreview}:${POSTGRES_PASSWORD:-bookreviewpassword}@db:5432/${POSTGRES_DB:-bookreview}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
-      GLOBAL_RATE_LIMIT_MAX: ${GLOBAL_RATE_LIMIT_MAX:-100}
-      REVIEW_RATE_LIMIT_WINDOW_MS: ${REVIEW_RATE_LIMIT_WINDOW_MS:-900000}
-      REVIEW_RATE_LIMIT_MAX: ${REVIEW_RATE_LIMIT_MAX:-300}
-      ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME:-admin}
-      ADMIN_SEED_NAME: ${ADMIN_SEED_NAME:-Platform Admin}
-      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin12345}
-      NODE_ENV: development
-    volumes:
-      - ./backend:/app
-      - backend-node-modules:/app/node_modules
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://127.0.0.1:4000/').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile.dev
+  #   restart: unless-stopped
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   ports:
+  #     - "${BACKEND_PORT:-4000}:4000"
+  #   environment:
+  #     PORT: 4000
+  #     DATABASE_URL: postgresql://${POSTGRES_USER:-bookreview}:${POSTGRES_PASSWORD:-bookreviewpassword}@db:5432/${POSTGRES_DB:-bookreview}
+  #     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+  #     OPENAI_API_KEY: ${OPENAI_API_KEY}
+  #     JWT_SECRET: ${JWT_SECRET}
+  #     JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+  #     CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+  #     GLOBAL_RATE_LIMIT_MAX: ${GLOBAL_RATE_LIMIT_MAX:-100}
+  #     REVIEW_RATE_LIMIT_WINDOW_MS: ${REVIEW_RATE_LIMIT_WINDOW_MS:-900000}
+  #     REVIEW_RATE_LIMIT_MAX: ${REVIEW_RATE_LIMIT_MAX:-300}
+  #     ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME:-admin}
+  #     ADMIN_SEED_NAME: ${ADMIN_SEED_NAME:-Platform Admin}
+  #     ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin12345}
+  #     NODE_ENV: development
+  #   volumes:
+  #     - ./backend:/app
+  #     - backend-node-modules:/app/node_modules
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "node",
+  #         "-e",
+  #         "fetch('http://127.0.0.1:4000/').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))",
+  #       ]
+  #     interval: 15s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 20s
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    restart: unless-stopped
-    depends_on:
-      backend:
-        condition: service_healthy
-    ports:
-      - "${FRONTEND_PORT:-3000}:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
-      NODE_ENV: development
-    volumes:
-      - ./frontend:/app
-      - frontend-node-modules:/app/node_modules
-      - frontend-next:/app/.next
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://127.0.0.1:3000/').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.dev
+  #   restart: unless-stopped
+  #   depends_on:
+  #     backend:
+  #       condition: service_healthy
+  #   ports:
+  #     - "${FRONTEND_PORT:-3000}:3000"
+  #   environment:
+  #     NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+  #     NODE_ENV: development
+  #   volumes:
+  #     - ./frontend:/app
+  #     - frontend-node-modules:/app/node_modules
+  #     - frontend-next:/app/.next
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "node",
+  #         "-e",
+  #         "fetch('http://127.0.0.1:3000/').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))",
+  #       ]
+  #     interval: 15s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 20s
 
 volumes:
   postgres-data:
-  backend-node-modules:
-  frontend-node-modules:
-  frontend-next:
+  # backend-node-modules:
+  # frontend-node-modules:
+  # frontend-next:
