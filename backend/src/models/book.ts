@@ -1,11 +1,54 @@
 import pool from "../config/db";
 import { Book } from "./type";
+import {
+  createPaginationMeta,
+  getPaginationOffset,
+  PaginatedData,
+} from "../utils/pagination";
 
-export const getAllBooks = async () => {
-  const result = await pool.query(
-    "SELECT * FROM books ORDER BY created_at DESC"
+interface GetAllBooksOptions {
+  page: number;
+  limit: number;
+  query?: string;
+}
+
+export const getAllBooks = async ({
+  page,
+  limit,
+  query,
+}: GetAllBooksOptions): Promise<PaginatedData<Record<string, unknown>>> => {
+  const trimmedQuery = query?.trim();
+  const filters: string[] = [];
+  const params: Array<string | number> = [];
+
+  if (trimmedQuery) {
+    params.push(`%${trimmedQuery}%`);
+    filters.push("(title ILIKE $1 OR author ILIKE $1 OR description ILIKE $1)");
+  }
+
+  const whereClause = filters.length > 0 ? `WHERE ${filters.join(" AND ")}` : "";
+  const countResult = await pool.query(
+    `SELECT COUNT(*)::int AS total FROM books ${whereClause}`,
+    params
   );
-  return result.rows;
+  const totalItems = countResult.rows[0]?.total ?? 0;
+  const pagination = createPaginationMeta(page, limit, totalItems);
+  const limitPosition = params.length + 1;
+  const offsetPosition = params.length + 2;
+
+  const result = await pool.query(
+    `SELECT *
+     FROM books
+     ${whereClause}
+     ORDER BY created_at DESC, id DESC
+     LIMIT $${limitPosition} OFFSET $${offsetPosition}`,
+    [...params, pagination.limit, getPaginationOffset(pagination)]
+  );
+
+  return {
+    items: result.rows,
+    pagination,
+  };
 };
 
 export const getBookById = async (id: number) => {

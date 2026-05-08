@@ -1,12 +1,39 @@
 import pool from "../config/db";
 import { Review } from "./type";
+import {
+  createPaginationMeta,
+  getPaginationOffset,
+  PaginatedData,
+} from "../utils/pagination";
 
-export const getReviewsByBookId = async (bookId: number) => {
-  const result = await pool.query(
-    "SELECT * FROM reviews WHERE book_id = $1 ORDER BY created_at DESC",
+interface GetReviewsByBookIdOptions {
+  page: number;
+  limit: number;
+}
+
+export const getReviewsByBookId = async (
+  bookId: number,
+  { page, limit }: GetReviewsByBookIdOptions
+): Promise<PaginatedData<Record<string, unknown>>> => {
+  const countResult = await pool.query(
+    "SELECT COUNT(*)::int AS total FROM reviews WHERE book_id = $1",
     [bookId]
   );
-  return result.rows;
+  const totalItems = countResult.rows[0]?.total ?? 0;
+  const pagination = createPaginationMeta(page, limit, totalItems);
+  const result = await pool.query(
+    `SELECT *
+     FROM reviews
+     WHERE book_id = $1
+     ORDER BY created_at DESC, id DESC
+     LIMIT $2 OFFSET $3`,
+    [bookId, pagination.limit, getPaginationOffset(pagination)]
+  );
+
+  return {
+    items: result.rows,
+    pagination,
+  };
 };
 
 export const createReview = async (data: Review) => {

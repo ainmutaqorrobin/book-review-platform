@@ -8,10 +8,13 @@ import {
 } from "../models/book";
 import { sendResponse } from "../utils/responseHelper";
 import { NotFoundError } from "../utils/notfoundError";
-import { createReview, getReviewsByBookId } from "../models/review";
+import { createReview } from "../models/review";
 import pool from "../config/db";
 import { enrichReviewText } from "../mastra/agents/analyze-agent";
 import { AppError } from "../utils/appError";
+import { getPaginationQuery } from "../utils/pagination";
+
+const BOOKS_DEFAULT_LIMIT = 9;
 
 export const getBooks = async (
   req: Request,
@@ -19,7 +22,15 @@ export const getBooks = async (
   next: NextFunction
 ) => {
   try {
-    const books = await getAllBooks();
+    const { page, limit } = getPaginationQuery(
+      req.query.page,
+      req.query.limit,
+      BOOKS_DEFAULT_LIMIT
+    );
+    const query =
+      typeof req.query.query === "string" ? req.query.query.trim() : undefined;
+    const books = await getAllBooks({ page, limit, query });
+
     return sendResponse(res, 200, "Books retrieved successfully", books);
   } catch (err) {
     next(err);
@@ -30,21 +41,14 @@ export const getBook = async (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
+  ) => {
   try {
     const bookId = Number(req.params.bookId);
     const book = await getBookById(bookId);
 
     if (!book) throw new NotFoundError(`Book with ID ${bookId} not found`);
 
-    const reviews = await getReviewsByBookId(bookId);
-
-    const combined = {
-      ...book,
-      reviews,
-    };
-
-    return sendResponse(res, 200, "Book retrieved successfully", combined);
+    return sendResponse(res, 200, "Book retrieved successfully", book);
   } catch (err) {
     next(err);
   }

@@ -1,9 +1,11 @@
 import { body, param } from "express-validator";
+import { createPaginationValidation } from "./pagination";
 
 export const getBookReviewsValidation = [
   param("bookId")
     .isInt({ min: 1 })
     .withMessage("Book ID must be a positive integer"),
+  ...createPaginationValidation(20),
 ];
 
 export const createBookReviewValidation = [

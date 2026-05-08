@@ -1,4 +1,4 @@
-import { ApiResponse, fetcher } from "@/lib/fetcher";
+import { ApiResponse, fetcher, PaginatedData } from "@/lib/fetcher";
 
 export interface Book {
   id: number;
@@ -18,7 +18,6 @@ export interface BookDetail {
   cover_image_url: string;
   owner_user_id: number | null;
   created_at: string;
-  reviews: Review[];
 }
 
 export interface Review {
@@ -34,7 +33,13 @@ export interface Review {
 }
 
 // For getBooks (list of books only)
-export type BooksListResponse = ApiResponse<Book[]>;
+export interface BooksQueryParams {
+  page?: number;
+  limit?: number;
+  query?: string;
+}
+
+export type BooksListResponse = ApiResponse<PaginatedData<Book>>;
 export type BookDetailResponse = ApiResponse<BookDetail>;
 // For search (books + reviews)
 export interface SearchData {
@@ -45,8 +50,16 @@ export interface SearchData {
 export type SearchResponse = ApiResponse<SearchData>;
 
 // Get all books
-export async function getBooks(): Promise<BooksListResponse> {
-  return fetcher<Book[]>("/books");
+export async function getBooks(
+  params: BooksQueryParams = {}
+): Promise<BooksListResponse> {
+  return fetcher<PaginatedData<Book>>("/books", {
+    params: {
+      ...(params.page ? { page: params.page } : {}),
+      ...(params.limit ? { limit: params.limit } : {}),
+      ...(params.query ? { query: params.query } : {}),
+    },
+  });
 }
 
 // Get one book

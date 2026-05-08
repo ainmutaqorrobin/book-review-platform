@@ -48,6 +48,7 @@ export default function BookForm({
   bookId,
 }: BookFormProps) {
   const router = useRouter();
+  const fallbackHref = mode === "edit" && bookId ? `/books/${bookId}` : "/books";
   const { isLoading: authLoading, role, user } = useAuth();
   const [isPageLoading, setIsPageLoading] = useState(mode === "edit");
   const [formError, setFormError] = useState<string | null>(null);
@@ -150,7 +151,7 @@ export default function BookForm({
               {mode === "edit" ? "Edit Book" : "Add New Book"}
             </h1>
           </div>
-          <BackButton />
+          <BackButton fallbackHref={fallbackHref} />
         </div>
 
         <p className="rounded-[1.5rem] border border-red-300/70 bg-red-50 px-4 py-4 text-sm text-red-700">
@@ -180,7 +181,7 @@ export default function BookForm({
           understands why the book belongs here.
         </p>
         <div className="mt-8">
-          <BackButton />
+          <BackButton fallbackHref={fallbackHref} />
         </div>
       </aside>
 

@@ -53,23 +53,82 @@ beforeEach(() => {
 });
 
 describe("Auth and RBAC", () => {
-  it("allows anonymous users to list books", async () => {
-    mockQuery.mockResolvedValueOnce({
-      rows: [
-        {
-          id: 1,
-          title: "Book One",
-          author: "Author",
-          owner_user_id: 7,
-        },
-      ],
-    });
+  it("allows anonymous users to list paginated books", async () => {
+    mockQuery
+      .mockResolvedValueOnce({
+        rows: [{ total: 1 }],
+      })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 1,
+            title: "Book One",
+            author: "Author",
+            owner_user_id: 7,
+          },
+        ],
+      });
 
     const response = await request(app).get("/books");
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
-    expect(response.body.data[0].owner_user_id).toBe(7);
+    expect(response.body.data.items[0].owner_user_id).toBe(7);
+    expect(response.body.data.pagination).toMatchObject({
+      page: 1,
+      limit: 9,
+      totalItems: 1,
+      totalPages: 1,
+      hasNextPage: false,
+      hasPreviousPage: false,
+    });
+  });
+
+  it("supports paginated books with page and limit params", async () => {
+    mockQuery
+      .mockResolvedValueOnce({
+        rows: [{ total: 20 }],
+      })
+      .mockResolvedValueOnce({
+        rows: [{ id: 10, title: "Page Two", author: "Author" }],
+      });
+
+    const response = await request(app).get("/books?page=2&limit=9");
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.pagination).toMatchObject({
+      page: 2,
+      limit: 9,
+      totalItems: 20,
+      totalPages: 3,
+      hasNextPage: true,
+      hasPreviousPage: true,
+    });
+    expect(mockQuery.mock.calls[1]?.[1]).toEqual([9, 9]);
+  });
+
+  it("filters paginated books by query", async () => {
+    mockQuery
+      .mockResolvedValueOnce({
+        rows: [{ total: 1 }],
+      })
+      .mockResolvedValueOnce({
+        rows: [{ id: 2, title: "Clean Code", author: "Robert C. Martin" }],
+      });
+
+    const response = await request(app).get("/books?query=clean");
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.items[0].title).toBe("Clean Code");
+    expect(mockQuery.mock.calls[0]?.[1]).toEqual(["%clean%"]);
+    expect(mockQuery.mock.calls[1]?.[1]).toEqual(["%clean%", 9, 0]);
+  });
+
+  it("rejects invalid book pagination params", async () => {
+    const response = await request(app).get("/books?page=0&limit=99");
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toMatch(/Validation failed/i);
   });
 
   it("allows anonymous users to create reviews", async () => {
@@ -99,6 +158,66 @@ describe("Auth and RBAC", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(enrichReviewText).toHaveBeenCalledWith("Great book");
+  });
+
+  it("returns paginated reviews for a book", async () => {
+    mockQuery
+      .mockResolvedValueOnce({ rowCount: 1, rows: [{ id: 2 }] })
+      .mockResolvedValueOnce({ rows: [{ total: 2 }] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 10,
+            book_id: 2,
+            reviewer_name: "Guest Reviewer",
+            text: "Great book",
+            rating: 5,
+          },
+        ],
+      });
+
+    const response = await request(app).get("/reviews/2?page=1&limit=1");
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.items).toHaveLength(1);
+    expect(response.body.data.pagination).toMatchObject({
+      page: 1,
+      limit: 1,
+      totalItems: 2,
+      totalPages: 2,
+      hasNextPage: true,
+      hasPreviousPage: false,
+    });
+  });
+
+  it("clamps review pages beyond the last page", async () => {
+    mockQuery
+      .mockResolvedValueOnce({ rowCount: 1, rows: [{ id: 2 }] })
+      .mockResolvedValueOnce({ rows: [{ total: 2 }] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 11,
+            book_id: 2,
+            reviewer_name: "Another Reviewer",
+            text: "Still good",
+            rating: 4,
+          },
+        ],
+      });
+
+    const response = await request(app).get("/reviews/2?page=9&limit=1");
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.pagination).toMatchObject({
+      page: 2,
+      limit: 1,
+      totalItems: 2,
+      totalPages: 2,
+      hasNextPage: false,
+      hasPreviousPage: true,
+    });
+    expect(mockQuery.mock.calls[2]?.[1]).toEqual([2, 1, 1]);
   });
 
   it("rejects anonymous book creation", async () => {

@@ -6,6 +6,20 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export interface PaginatedData<T> {
+  items: T[];
+  pagination: PaginationMeta;
+}
+
 export async function fetcher<T>(
   path: string,
   options: AxiosRequestConfig = {},

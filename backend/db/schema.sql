@@ -38,5 +38,7 @@ CREATE TABLE
 -- indexes
 CREATE INDEX IF NOT EXISTS idx_books_title ON books (title);
 CREATE INDEX IF NOT EXISTS idx_books_owner_user_id ON books (owner_user_id);
+CREATE INDEX IF NOT EXISTS idx_books_created_at_id ON books (created_at DESC, id DESC);
 
 CREATE INDEX IF NOT EXISTS idx_reviews_book_id ON reviews (book_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_book_id_created_at_id ON reviews (book_id, created_at DESC, id DESC);

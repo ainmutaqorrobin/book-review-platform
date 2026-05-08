@@ -1,4 +1,14 @@
-import { body, param } from "express-validator";
+import { body, param, query } from "express-validator";
+import { createPaginationValidation } from "./pagination";
+
+export const getBooksValidation = [
+  ...createPaginationValidation(24),
+  query("query")
+    .optional()
+    .isString()
+    .withMessage("Query must be a string")
+    .trim(),
+];
 
 export const getBookValidation = [
   param("bookId")

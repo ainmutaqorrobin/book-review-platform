@@ -1,53 +1,117 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "../ui/skeleton";
-import { deleteBook, getBookById, BookDetail as Model, Review as ReviewModel } from "@/utils/api/books";
+import {
+  deleteBook,
+  getBookById,
+  BookDetail as Model,
+  Review as ReviewModel,
+} from "@/utils/api/books";
+import { PaginationMeta } from "@/lib/fetcher";
 import { FALLBACK_IMAGE } from "@/utils/const/image";
 import { formatDate } from "@/lib/format";
 import ConfirmationDialog from "./confirmation-dialog";
 import BackButton from "./back-button";
 import Review from "./review";
 import { useAuth } from "../providers/auth-provider";
+import { getReviews } from "@/utils/api/reviews";
 
 interface BookDetailProps {
   bookId: number;
 }
 
+const REVIEWS_PER_PAGE = 5;
+const DEFAULT_REVIEW_PAGINATION: PaginationMeta = {
+  page: 1,
+  limit: REVIEWS_PER_PAGE,
+  totalItems: 0,
+  totalPages: 1,
+  hasNextPage: false,
+  hasPreviousPage: false,
+};
+
 export default function BookDetail({ bookId }: BookDetailProps) {
   const router = useRouter();
   const { isLoading: authLoading, role, user } = useAuth();
   const [book, setBook] = useState<Model | null>(null);
+  const [reviews, setReviews] = useState<ReviewModel[]>([]);
+  const [reviewPagination, setReviewPagination] = useState<PaginationMeta>(
+    DEFAULT_REVIEW_PAGINATION
+  );
   const [error, setError] = useState<string | null>(null);
+  const [reviewsError, setReviewsError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [bookResponse, reviewsResponse] = await Promise.all([
+        getBookById(bookId),
+        getReviews(bookId, { page: 1, limit: REVIEWS_PER_PAGE }),
+      ]);
+
+      if (bookResponse.success && bookResponse.data) {
+        setBook(bookResponse.data);
+        setError(null);
+      } else {
+        setError(bookResponse.message || "Book not found.");
+      }
+
+      if (reviewsResponse.success && reviewsResponse.data) {
+        setReviews(reviewsResponse.data.items ?? []);
+        setReviewPagination(
+          reviewsResponse.data.pagination ?? DEFAULT_REVIEW_PAGINATION
+        );
+        setReviewsError(null);
+      } else {
+        setReviews([]);
+        setReviewPagination(DEFAULT_REVIEW_PAGINATION);
+        setReviewsError(reviewsResponse.message || "Failed to load reviews.");
+      }
+    } catch {
+      setError("An error occurred while fetching the book.");
+    } finally {
+      setLoading(false);
+    }
+  }, [bookId]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await getBookById(bookId);
+    void fetchData();
+  }, [fetchData]);
 
-        if (response.success && response.data) {
-          setBook(response.data);
-          setError(null);
-          return;
-        }
-
-        setError(response.message || "Book not found.");
-      } catch {
-        setError("An error occurred while fetching the book.");
-      } finally {
-        setLoading(false);
+  useEffect(() => {
+    const refreshIfNeeded = () => {
+      if (typeof window === "undefined") {
+        return;
       }
+
+      const shouldRefresh = window.sessionStorage.getItem("refresh-book-detail");
+
+      if (shouldRefresh !== String(bookId)) {
+        return;
+      }
+
+      window.sessionStorage.removeItem("refresh-book-detail");
+      void fetchData();
     };
 
-    void fetchData();
-  }, [bookId]);
+    refreshIfNeeded();
+    window.addEventListener("focus", refreshIfNeeded);
+    window.addEventListener("pageshow", refreshIfNeeded);
+
+    return () => {
+      window.removeEventListener("focus", refreshIfNeeded);
+      window.removeEventListener("pageshow", refreshIfNeeded);
+    };
+  }, [bookId, fetchData]);
 
   if (loading) {
     return (
@@ -75,7 +139,6 @@ export default function BookDetail({ bookId }: BookDetailProps) {
     cover_image_url,
     owner_user_id,
     created_at,
-    reviews,
   } = book;
   const canManageBook =
     !authLoading &&
@@ -92,6 +155,36 @@ export default function BookDetail({ bookId }: BookDetailProps) {
     toast.success("Book deleted successfully.");
     router.push("/books");
     router.refresh();
+  };
+
+  const handleLoadMoreReviews = async () => {
+    if (!reviewPagination.hasNextPage) {
+      return;
+    }
+
+    try {
+      setLoadingMoreReviews(true);
+      const response = await getReviews(bookId, {
+        page: reviewPagination.page + 1,
+        limit: reviewPagination.limit,
+      });
+
+      if (!response.success || !response.data) {
+        toast.error(response.message || "Failed to load more reviews.");
+        return;
+      }
+
+      setReviews((currentReviews) => [
+        ...currentReviews,
+        ...(response.data.items ?? []),
+      ]);
+      setReviewPagination(response.data.pagination ?? reviewPagination);
+      setReviewsError(null);
+    } catch {
+      toast.error("Failed to load more reviews.");
+    } finally {
+      setLoadingMoreReviews(false);
+    }
   };
 
   return (
@@ -131,7 +224,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
               </ConfirmationDialog>
             </>
           )}
-          <BackButton />
+          <BackButton fallbackHref="/books" />
         </div>
       </div>
 
@@ -180,6 +273,9 @@ export default function BookDetail({ bookId }: BookDetailProps) {
                 <h2 className="mt-2 font-[family-name:Georgia,serif] text-3xl text-stone-900">
                   Reviews
                 </h2>
+                <p className="mt-2 text-sm text-stone-600">
+                  Showing {reviews.length} of {reviewPagination.totalItems} reviews
+                </p>
               </div>
               <Button
                 asChild
@@ -191,7 +287,11 @@ export default function BookDetail({ bookId }: BookDetailProps) {
             </div>
 
             <div className="mt-6 space-y-4">
-              {reviews.length === 0 ? (
+              {reviewsError ? (
+                <div className="rounded-[1.5rem] border border-red-300/70 bg-red-50 px-5 py-4 text-sm text-red-700">
+                  {reviewsError}
+                </div>
+              ) : reviews.length === 0 ? (
                 <div className="rounded-[1.5rem] border border-stone-900/8 bg-white/60 px-5 py-8 text-center text-stone-600">
                   <p className="font-[family-name:Georgia,serif] text-2xl text-stone-900">
                     No reviews yet.
@@ -206,6 +306,30 @@ export default function BookDetail({ bookId }: BookDetailProps) {
                 ))
               )}
             </div>
+
+            {reviewPagination.hasNextPage && !reviewsError && (
+              <div className="mt-6 flex justify-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-11 rounded-full border-stone-300 bg-white px-5 text-stone-700 hover:border-stone-500 hover:bg-stone-50"
+                  disabled={loadingMoreReviews}
+                  onClick={handleLoadMoreReviews}
+                >
+                  {loadingMoreReviews ? (
+                    <>
+                      <Loader2
+                        aria-hidden="true"
+                        className="mr-2 h-4 w-4 animate-spin"
+                      />
+                      Loading More...
+                    </>
+                  ) : (
+                    "Load More Reviews"
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

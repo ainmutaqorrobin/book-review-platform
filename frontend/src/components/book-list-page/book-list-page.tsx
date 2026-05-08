@@ -6,61 +6,85 @@ import { Loader2, RefreshCcw } from "lucide-react";
 import BooksList from "@/components/common/book-list";
 import BookSkeleton from "@/components/common/book-skeleton";
 import DebouncedSearchInput from "@/components/common/debounced-input";
+import PaginationControls from "@/components/common/pagination-controls";
 import { Button } from "@/components/ui/button";
 import { useBooks } from "@/hooks/useBooks";
 
+const BOOKS_PER_PAGE = 9;
+
+function parsePageParam(value: string | null) {
+  const parsed = Number.parseInt(value ?? "1", 10);
+  return Number.isNaN(parsed) || parsed < 1 ? 1 : parsed;
+}
+
 export default function BooksListPage() {
-  const { books, loading, error, search, refresh } = useBooks({
-    autoFetch: false,
-  });
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") ?? "");
   const currentQuery = searchParams.get("q") ?? "";
+  const currentPage = parsePageParam(searchParams.get("page"));
+  const { books, pagination, loading, error, refresh } = useBooks({
+    autoFetch: true,
+    page: currentPage,
+    limit: BOOKS_PER_PAGE,
+    query: currentQuery,
+  });
 
   const updateQueryString = useCallback(
-    (query: string) => {
+    (nextQuery: string, nextPage: number) => {
       const params = new URLSearchParams(searchParams.toString());
 
-      if (query.trim()) {
-        params.set("q", query.trim());
+      if (nextQuery.trim()) {
+        params.set("q", nextQuery.trim());
       } else {
         params.delete("q");
       }
 
+      if (nextPage > 1) {
+        params.set("page", String(nextPage));
+      } else {
+        params.delete("page");
+      }
+
       const queryString = params.toString();
-      router.replace(queryString ? `${pathname}?${queryString}` : pathname, {
-        scroll: false,
-      });
+      const nextUrl = queryString ? `${pathname}?${queryString}` : pathname;
+      const currentUrl = searchParams.toString()
+        ? `${pathname}?${searchParams.toString()}`
+        : pathname;
+
+      if (nextUrl === currentUrl) {
+        return;
+      }
+
+      router.replace(nextUrl, { scroll: false });
     },
     [pathname, router, searchParams]
   );
 
   useEffect(() => {
     setSearchTerm(currentQuery);
-
-    if (currentQuery.trim()) {
-      void search(currentQuery);
-      return;
-    }
-
-    void refresh();
-  }, [currentQuery, refresh, search]);
+  }, [currentQuery]);
 
   const handleSearch = (query: string) => {
     setSearchTerm(query);
-    updateQueryString(query);
+    updateQueryString(query, 1);
+  };
+
+  const handlePageChange = (page: number) => {
+    updateQueryString(currentQuery, page);
   };
 
   const handleRefresh = async () => {
-    if (currentQuery.trim()) {
-      await search(currentQuery);
-      return;
-    }
-
     await refresh();
   };
+
+  const startItem =
+    pagination.totalItems === 0
+      ? 0
+      : (pagination.page - 1) * pagination.limit + 1;
+  const endItem =
+    pagination.totalItems === 0 ? 0 : startItem + books.length - 1;
 
   return (
     <section className="mx-auto flex w-full max-w-7xl flex-col gap-8">
@@ -85,9 +109,9 @@ export default function BooksListPage() {
             Live Snapshot
           </p>
           <p className="font-[family-name:Georgia,serif] text-3xl text-stone-900">
-            {books.length}
+            {pagination.totalItems}
           </p>
-          <p>{currentQuery ? "Matching titles and authors" : "Books in view"}</p>
+          <p>{currentQuery ? "Matching titles and authors" : "Books in catalog"}</p>
         </div>
       </div>
 
@@ -130,7 +154,25 @@ export default function BooksListPage() {
           </p>
         </div>
       ) : (
-        <BooksList books={books} onBookDeleted={handleRefresh} />
+        <div className="space-y-6">
+          <div className="flex flex-col gap-3 rounded-[1.5rem] border border-stone-900/8 bg-white/60 px-5 py-4 text-sm text-stone-600 shadow-[0_18px_40px_rgba(64,38,24,0.06)] sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              Showing {startItem}-{endItem} of {pagination.totalItems}
+            </p>
+            <p>
+              Page {pagination.page} of {pagination.totalPages}
+            </p>
+          </div>
+
+          <BooksList books={books} onBookDeleted={handleRefresh} />
+
+          <PaginationControls
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            disabled={loading}
+            onPageChange={handlePageChange}
+          />
+        </div>
       )}
     </section>
   );

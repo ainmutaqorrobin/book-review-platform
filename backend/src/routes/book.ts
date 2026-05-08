@@ -13,6 +13,7 @@ import {
   createSingleBookValidation,
   deleteSingleBookValidation,
   getBookValidation,
+  getBooksValidation,
   updateSingleBookValidation,
 } from "../validation/book";
 import {
@@ -26,7 +27,7 @@ import { reviewCreateRateLimiter } from "../middlewares/rateLimiter";
 
 const router = Router();
 
-router.get("/", getBooks);
+router.get("/", getBooksValidation, handleValidation, getBooks);
 
 router.get("/:bookId", getBookValidation, handleValidation, getBook);
 

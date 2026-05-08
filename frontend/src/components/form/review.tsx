@@ -65,8 +65,12 @@ export default function ReviewForm({ bookId }: IProps) {
         return;
       }
 
-      router.back();
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem("refresh-book-detail", bookId);
+      }
+
       toast.success("Review submitted");
+      router.back();
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong. Please try again.");
@@ -87,7 +91,7 @@ export default function ReviewForm({ bookId }: IProps) {
           understand the tone, quality, and aftertaste of the book.
         </p>
         <div className="mt-8">
-          <BackButton />
+          <BackButton fallbackHref={`/books/${bookId}`} />
         </div>
       </aside>
 
