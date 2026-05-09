@@ -8,7 +8,7 @@ export interface ReviewsQueryParams {
 
 export async function getReviews(
   bookId: number | string,
-  params: ReviewsQueryParams = {}
+  params: ReviewsQueryParams = {},
 ) {
   return fetcher<PaginatedData<Review>>(`/reviews/${bookId}`, {
     params: {

@@ -11,14 +11,14 @@ const REVIEWS_DEFAULT_LIMIT = 5;
 export const getBookReviews = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const bookId = Number(req.params.bookId);
     const { page, limit } = getPaginationQuery(
       req.query.page,
       req.query.limit,
-      REVIEWS_DEFAULT_LIMIT
+      REVIEWS_DEFAULT_LIMIT,
     );
 
     const book = await pool.query("SELECT id FROM books WHERE id = $1", [
@@ -38,7 +38,7 @@ export const getBookReviews = async (
 export const createBookReview = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const bookId = Number(req.params.bookId);

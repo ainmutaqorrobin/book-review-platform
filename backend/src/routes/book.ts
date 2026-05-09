@@ -37,7 +37,7 @@ router.post(
   authorizeRoles(Role.USER, Role.ADMIN),
   createSingleBookValidation,
   handleValidation,
-  createSingleBook
+  createSingleBook,
 );
 
 router.post(
@@ -46,7 +46,7 @@ router.post(
   optionalAuth,
   createBookReviewValidation,
   handleValidation,
-  createBookReview
+  createBookReview,
 );
 
 router.put(
@@ -55,7 +55,7 @@ router.put(
   updateSingleBookValidation,
   handleValidation,
   authorizeBookOwnerOrAdmin,
-  updateSingleBook
+  updateSingleBook,
 );
 
 router.delete(
@@ -64,7 +64,7 @@ router.delete(
   deleteSingleBookValidation,
   handleValidation,
   authorizeBookOwnerOrAdmin,
-  deleteSingleBook
+  deleteSingleBook,
 );
 
 export { router as BookRouter };

@@ -20,7 +20,7 @@ export interface PaginationQuery {
 export function getPaginationQuery(
   rawPage: unknown,
   rawLimit: unknown,
-  defaultLimit: number
+  defaultLimit: number,
 ): PaginationQuery {
   const parsedPage = Number.parseInt(String(rawPage ?? "1"), 10);
   const parsedLimit = Number.parseInt(String(rawLimit ?? defaultLimit), 10);
@@ -34,7 +34,7 @@ export function getPaginationQuery(
 export function createPaginationMeta(
   requestedPage: number,
   limit: number,
-  totalItems: number
+  totalItems: number,
 ): PaginationMeta {
   const totalPages = Math.max(1, Math.ceil(totalItems / limit));
   const page = Math.min(requestedPage, totalPages);

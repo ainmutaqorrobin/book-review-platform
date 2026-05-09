@@ -11,7 +11,7 @@ const expiresInMs = Number(process.env.JWT_EXPIRES_IN!);
 export const signup = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { username, password, name } = req.body;
@@ -29,7 +29,7 @@ export const signup = async (
 export const login = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { username, password } = req.body;
@@ -59,7 +59,7 @@ export const login = async (
 export const getCurrentUser = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     if (!req.user) throw new AppError("User not authenticated", 401);
@@ -76,7 +76,7 @@ export const getCurrentUser = async (
 export const logout = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     res.clearCookie("jwt", {

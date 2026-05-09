@@ -90,7 +90,7 @@ export default function PaginationControls({
           >
             {item}
           </Button>
-        )
+        ),
       )}
 
       <Button

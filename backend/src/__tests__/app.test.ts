@@ -347,19 +347,17 @@ describe("Auth and RBAC", () => {
   });
 
   it("does not allow public signup to escalate to admin", async () => {
-    mockQuery
-      .mockResolvedValueOnce({ rows: [] })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 33,
-            username: "new-user",
-            name: "New User",
-            role: "user",
-            created_at: new Date().toISOString(),
-          },
-        ],
-      });
+    mockQuery.mockResolvedValueOnce({ rows: [] }).mockResolvedValueOnce({
+      rows: [
+        {
+          id: 33,
+          username: "new-user",
+          name: "New User",
+          role: "user",
+          created_at: new Date().toISOString(),
+        },
+      ],
+    });
 
     const response = await request(app).post("/auth/signup").send({
       username: "new-user",

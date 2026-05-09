@@ -51,7 +51,7 @@ export type SearchResponse = ApiResponse<SearchData>;
 
 // Get all books
 export async function getBooks(
-  params: BooksQueryParams = {}
+  params: BooksQueryParams = {},
 ): Promise<BooksListResponse> {
   return fetcher<PaginatedData<Book>>("/books", {
     params: {

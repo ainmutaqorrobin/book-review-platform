@@ -19,13 +19,13 @@ const BOOKS_DEFAULT_LIMIT = 9;
 export const getBooks = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const { page, limit } = getPaginationQuery(
       req.query.page,
       req.query.limit,
-      BOOKS_DEFAULT_LIMIT
+      BOOKS_DEFAULT_LIMIT,
     );
     const query =
       typeof req.query.query === "string" ? req.query.query.trim() : undefined;
@@ -40,8 +40,8 @@ export const getBooks = async (
 export const getBook = async (
   req: Request,
   res: Response,
-  next: NextFunction
-  ) => {
+  next: NextFunction,
+) => {
   try {
     const bookId = Number(req.params.bookId);
     const book = await getBookById(bookId);
@@ -57,7 +57,7 @@ export const getBook = async (
 export const createSingleBook = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     if (!req.user) {
@@ -83,7 +83,7 @@ export const createSingleBook = async (
 export const createBookReview = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const bookId = Number(req.params.bookId);
@@ -119,7 +119,7 @@ export const createBookReview = async (
 export const updateSingleBook = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const id = Number(req.params.bookId);
@@ -143,7 +143,7 @@ export const updateSingleBook = async (
 export const deleteSingleBook = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const id = Number(req.params.bookId);

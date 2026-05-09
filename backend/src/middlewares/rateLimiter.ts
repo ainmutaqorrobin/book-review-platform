@@ -4,7 +4,7 @@ import { rateLimit } from "express-rate-limit";
 const GLOBAL_WINDOW_MS = 15 * 60 * 1000;
 const GLOBAL_LIMIT = 100;
 const REVIEW_WINDOW_MS = Number(
-  process.env.REVIEW_RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000
+  process.env.REVIEW_RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000,
 );
 const REVIEW_LIMIT = Number(process.env.REVIEW_RATE_LIMIT_MAX || 300);
 
@@ -12,7 +12,8 @@ function isReviewCreateRequest(req: Request) {
   if (req.method !== "POST") return false;
 
   return (
-    /^\/reviews\/\d+$/.test(req.path) || /^\/books\/\d+\/reviews$/.test(req.path)
+    /^\/reviews\/\d+$/.test(req.path) ||
+    /^\/books\/\d+\/reviews$/.test(req.path)
   );
 }
 

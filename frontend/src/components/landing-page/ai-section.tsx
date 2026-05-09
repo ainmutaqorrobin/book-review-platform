@@ -5,19 +5,23 @@ import { Button } from "@/components/ui/button";
 const features = [
   {
     title: "Review Summaries",
-    description: "Condense long thoughts into short reading notes you can scan later.",
+    description:
+      "Condense long thoughts into short reading notes you can scan later.",
   },
   {
     title: "Sentiment Clarity",
-    description: "See the emotional signal behind a review without rewriting it from scratch.",
+    description:
+      "See the emotional signal behind a review without rewriting it from scratch.",
   },
   {
     title: "Smarter Tags",
-    description: "Generate useful labels that make the collection easier to navigate.",
+    description:
+      "Generate useful labels that make the collection easier to navigate.",
   },
   {
     title: "Saved Context",
-    description: "Keep AI output alongside each review so it remains part of your archive.",
+    description:
+      "Keep AI output alongside each review so it remains part of your archive.",
   },
 ];
 

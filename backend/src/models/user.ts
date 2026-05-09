@@ -6,7 +6,7 @@ export const createUser = async (
   username: string,
   password: string,
   name: string,
-  role: PersistedRole = Role.USER
+  role: PersistedRole = Role.USER,
 ): Promise<User> => {
   const password_hash = await hash(password, 10);
 
@@ -14,14 +14,14 @@ export const createUser = async (
     `INSERT INTO users (username, password_hash, name, role)
      VALUES ($1, $2, $3, $4)
      RETURNING id, username, name, role, created_at`,
-    [username, password_hash, name, role]
+    [username, password_hash, name, role],
   );
 
   return result.rows[0];
 };
 
 export const findUserByUsername = async (
-  username: string
+  username: string,
 ): Promise<User | null> => {
   const result = await pool.query(`SELECT * FROM users WHERE username = $1`, [
     username,
@@ -37,7 +37,7 @@ export const findUserById = async (id: number): Promise<User | null> => {
     `SELECT id, username, name, role, created_at 
      FROM users
      WHERE id = $1`,
-    [id]
+    [id],
   );
 
   return result.rows[0] || null;

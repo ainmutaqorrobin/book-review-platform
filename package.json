@@ -1,0 +1,11 @@
+{
+  "name": "book-review-platform",
+  "private": true,
+  "scripts": {
+    "format": "prettier . --write --ignore-unknown",
+    "format:check": "prettier . --check --ignore-unknown"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2"
+  }
+}

@@ -4,7 +4,7 @@ export const sendResponse = (
   res: Response,
   statusCode: number,
   message: string,
-  data?: any
+  data?: any,
 ) => {
   return res.status(statusCode).json({
     success: statusCode >= 200 && statusCode < 300,

@@ -59,7 +59,7 @@ export default function BooksListPage() {
 
       router.replace(nextUrl, { scroll: false });
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams],
   );
 
   useEffect(() => {
@@ -111,7 +111,9 @@ export default function BooksListPage() {
           <p className="font-[family-name:Georgia,serif] text-3xl text-stone-900">
             {pagination.totalItems}
           </p>
-          <p>{currentQuery ? "Matching titles and authors" : "Books in catalog"}</p>
+          <p>
+            {currentQuery ? "Matching titles and authors" : "Books in catalog"}
+          </p>
         </div>
       </div>
 
@@ -126,7 +128,10 @@ export default function BooksListPage() {
         >
           {loading ? (
             <>
-              <Loader2 aria-hidden="true" className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2
+                aria-hidden="true"
+                className="mr-2 h-4 w-4 animate-spin"
+              />
               Refreshing…
             </>
           ) : (

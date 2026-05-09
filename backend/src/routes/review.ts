@@ -14,7 +14,7 @@ router.get(
   "/:bookId",
   getBookReviewsValidation,
   handleValidation,
-  getBookReviews
+  getBookReviews,
 );
 
 router.post(
@@ -23,7 +23,7 @@ router.post(
   optionalAuth,
   createBookReviewValidation,
   handleValidation,
-  createBookReview
+  createBookReview,
 );
 
 export { router as ReviewRouter };

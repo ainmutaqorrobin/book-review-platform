@@ -18,7 +18,7 @@ if (!connectionString) {
 
 if (!adminPassword) {
   console.error(
-    "ADMIN_SEED_PASSWORD is required when seeding admin credentials in production."
+    "ADMIN_SEED_PASSWORD is required when seeding admin credentials in production.",
   );
   process.exit(1);
 }
@@ -40,7 +40,7 @@ try {
        password_hash = EXCLUDED.password_hash,
        name = EXCLUDED.name,
        role = 'admin'`,
-    [adminUsername, passwordHash, adminName]
+    [adminUsername, passwordHash, adminName],
   );
   await client.query("COMMIT");
 

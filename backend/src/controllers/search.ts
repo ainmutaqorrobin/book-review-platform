@@ -6,7 +6,7 @@ import { AppError } from "../utils/appError";
 export const searchHandler = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const query = (req.query.query as string)?.trim();
@@ -14,7 +14,7 @@ export const searchHandler = async (
     if (!query || query.length < 2) {
       throw new AppError(
         "Query parameter is required and must be at least 2 characters",
-        400
+        400,
       );
     }
 
@@ -24,7 +24,7 @@ export const searchHandler = async (
       res,
       200,
       "Search results fetched successfully",
-      result
+      result,
     );
   } catch (err) {
     next(err);

@@ -91,7 +91,10 @@ export default function HeroSection() {
           <div className="mt-8 grid gap-4">
             <div className="rounded-3xl border border-white/10 bg-white/6 p-5">
               <div className="flex items-start gap-3">
-                <Quote className="mt-1 h-4 w-4 text-[#d8b08b]" aria-hidden="true" />
+                <Quote
+                  className="mt-1 h-4 w-4 text-[#d8b08b]"
+                  aria-hidden="true"
+                />
                 <div>
                   <p className="text-sm leading-7 text-stone-200">
                     “Track the titles you want to remember, then turn quick

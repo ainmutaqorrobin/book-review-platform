@@ -33,7 +33,7 @@ export function logout(): Promise<ApiResponse<null>> {
 
 export function login(
   username: string,
-  password: string
+  password: string,
 ): Promise<ApiResponse<null>> {
   return fetcher<null>("/auth/login", {
     method: "POST",

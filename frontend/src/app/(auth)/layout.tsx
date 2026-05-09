@@ -78,8 +78,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
                       Guest Friendly
                     </p>
                     <p className="mt-3 max-w-md text-sm leading-6 text-stone-100">
-                      You do not need an account to look around. Sign in when you
-                      want to save books, manage reviews, or own the collection.
+                      You do not need an account to look around. Sign in when
+                      you want to save books, manage reviews, or own the
+                      collection.
                     </p>
                   </div>
                 </div>

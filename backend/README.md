@@ -54,6 +54,7 @@ View [API Documentation](https://documenter.getpostman.com/view/24966843/2sB3Wnx
 5. Use the endpoints above to interact with the API.
 
 For local development, the default seeded admin credentials are:
+
 - Username: `admin`
 - Password: `admin12345`
 

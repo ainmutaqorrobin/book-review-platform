@@ -26,10 +26,11 @@ export const getAllBooks = async ({
     filters.push("(title ILIKE $1 OR author ILIKE $1 OR description ILIKE $1)");
   }
 
-  const whereClause = filters.length > 0 ? `WHERE ${filters.join(" AND ")}` : "";
+  const whereClause =
+    filters.length > 0 ? `WHERE ${filters.join(" AND ")}` : "";
   const countResult = await pool.query(
     `SELECT COUNT(*)::int AS total FROM books ${whereClause}`,
-    params
+    params,
   );
   const totalItems = countResult.rows[0]?.total ?? 0;
   const pagination = createPaginationMeta(page, limit, totalItems);
@@ -42,7 +43,7 @@ export const getAllBooks = async ({
      ${whereClause}
      ORDER BY created_at DESC, id DESC
      LIMIT $${limitPosition} OFFSET $${offsetPosition}`,
-    [...params, pagination.limit, getPaginationOffset(pagination)]
+    [...params, pagination.limit, getPaginationOffset(pagination)],
   );
 
   return {
@@ -66,7 +67,7 @@ export const createBook = async (data: Book) => {
       data.description ?? null,
       data.cover_image_url ?? null,
       data.owner_user_id ?? null,
-    ]
+    ],
   );
   return result.rows[0];
 };
@@ -86,7 +87,7 @@ export const updateBook = async (id: number, data: Partial<Book>) => {
       data.description ?? null,
       data.cover_image_url ?? null,
       id,
-    ]
+    ],
   );
 
   return result.rows[0];
@@ -95,7 +96,7 @@ export const updateBook = async (id: number, data: Partial<Book>) => {
 export const deleteBook = async (id: number) => {
   const result = await pool.query(
     "DELETE FROM books WHERE id = $1 RETURNING *",
-    [id]
+    [id],
   );
   return result.rows[0];
 };

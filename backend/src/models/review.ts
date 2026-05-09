@@ -13,11 +13,11 @@ interface GetReviewsByBookIdOptions {
 
 export const getReviewsByBookId = async (
   bookId: number,
-  { page, limit }: GetReviewsByBookIdOptions
+  { page, limit }: GetReviewsByBookIdOptions,
 ): Promise<PaginatedData<Record<string, unknown>>> => {
   const countResult = await pool.query(
     "SELECT COUNT(*)::int AS total FROM reviews WHERE book_id = $1",
-    [bookId]
+    [bookId],
   );
   const totalItems = countResult.rows[0]?.total ?? 0;
   const pagination = createPaginationMeta(page, limit, totalItems);
@@ -27,7 +27,7 @@ export const getReviewsByBookId = async (
      WHERE book_id = $1
      ORDER BY created_at DESC, id DESC
      LIMIT $2 OFFSET $3`,
-    [bookId, pagination.limit, getPaginationOffset(pagination)]
+    [bookId, pagination.limit, getPaginationOffset(pagination)],
   );
 
   return {
@@ -49,7 +49,7 @@ export const createReview = async (data: Review) => {
       data.summary ?? null,
       data.sentiment_score ?? null,
       JSON.stringify(data.tags ?? []),
-    ]
+    ],
   );
   return result.rows[0];
 };

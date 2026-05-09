@@ -112,7 +112,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
               variant="ghost"
               size="icon"
               onClick={() => setIsOpen((currentState) => !currentState)}
-              aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-label={
+                isOpen ? "Close navigation menu" : "Open navigation menu"
+              }
               aria-expanded={isOpen}
               aria-controls="mobile-navigation"
               className="rounded-full border border-stone-900/10 bg-white/60 md:hidden"

@@ -8,7 +8,7 @@ export const searchBooksAndReviews = async (query: string) => {
      FROM books
      WHERE title ILIKE $1 OR author ILIKE $1 OR description ILIKE $1
      ORDER BY created_at DESC`,
-    [searchTerm]
+    [searchTerm],
   );
 
   const reviews = await pool.query(
@@ -17,7 +17,7 @@ export const searchBooksAndReviews = async (query: string) => {
      JOIN books b ON b.id = r.book_id
      WHERE r.text ILIKE $1 OR r.reviewer_name ILIKE $1
      ORDER BY r.created_at DESC`,
-    [searchTerm]
+    [searchTerm],
   );
 
   return {
