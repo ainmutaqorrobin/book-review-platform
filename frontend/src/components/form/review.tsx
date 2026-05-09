@@ -61,7 +61,9 @@ export default function ReviewForm({ bookId }: IProps) {
       const response = await createReview(data, bookId);
 
       if (!response.success) {
-        toast.error(response.message || "Please update the review and try again.");
+        toast.error(
+          response.message || "Please update the review and try again.",
+        );
         return;
       }
 
@@ -70,7 +72,8 @@ export default function ReviewForm({ bookId }: IProps) {
       }
 
       toast.success("Review submitted");
-      router.back();
+      router.replace(`/books/${bookId}`);
+      router.refresh();
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong. Please try again.");
@@ -114,7 +117,9 @@ export default function ReviewForm({ bookId }: IProps) {
               name="reviewer_name"
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel className={fieldLabelClassName}>Your Name</FormLabel>
+                  <FormLabel className={fieldLabelClassName}>
+                    Your Name
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -161,7 +166,9 @@ export default function ReviewForm({ bookId }: IProps) {
               rules={{ required: "Please enter your rate", min: 1, max: 5 }}
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel className={fieldLabelClassName}>Rate (1-5)</FormLabel>
+                  <FormLabel className={fieldLabelClassName}>
+                    Rate (1-5)
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}

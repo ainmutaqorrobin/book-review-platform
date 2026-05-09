@@ -43,16 +43,16 @@ const fieldLabelClassName =
 const fieldInputClassName =
   "h-12 rounded-2xl border-stone-300/80 bg-white/85 px-4 shadow-none placeholder:text-stone-400 focus-visible:border-stone-500 focus-visible:ring-stone-500/20";
 
-export default function BookForm({
-  mode = "create",
-  bookId,
-}: BookFormProps) {
+export default function BookForm({ mode = "create", bookId }: BookFormProps) {
   const router = useRouter();
-  const fallbackHref = mode === "edit" && bookId ? `/books/${bookId}` : "/books";
+  const isEditMode = mode === "edit" && Boolean(bookId);
+  const fallbackHref =
+    mode === "edit" && bookId ? `/books/${bookId}` : "/books";
   const { isLoading: authLoading, role, user } = useAuth();
-  const [isPageLoading, setIsPageLoading] = useState(mode === "edit");
   const [formError, setFormError] = useState<string | null>(null);
   const [ownerUserId, setOwnerUserId] = useState<number | null>(null);
+  const [loadedBookId, setLoadedBookId] = useState<number | null>(null);
+  const [failedBookId, setFailedBookId] = useState<number | null>(null);
 
   const form = useForm<BookFormData>({
     defaultValues: EMPTY_VALUES,
@@ -66,22 +66,20 @@ export default function BookForm({
   } = form;
 
   useEffect(() => {
-    if (mode !== "edit" || !bookId) {
-      setIsPageLoading(false);
+    if (!isEditMode || !bookId) {
       return;
     }
 
     let isMounted = true;
 
     const loadBook = async () => {
-      setIsPageLoading(true);
       const response = await getBookById(bookId);
 
       if (!isMounted) return;
 
       if (!response.success || !response.data) {
+        setFailedBookId(bookId);
         setFormError(response.message || "Failed to load book.");
-        setIsPageLoading(false);
         return;
       }
 
@@ -92,8 +90,9 @@ export default function BookForm({
         description: response.data.description ?? "",
         cover_image_url: response.data.cover_image_url ?? "",
       });
+      setLoadedBookId(bookId);
+      setFailedBookId(null);
       setFormError(null);
-      setIsPageLoading(false);
     };
 
     void loadBook();
@@ -101,7 +100,10 @@ export default function BookForm({
     return () => {
       isMounted = false;
     };
-  }, [bookId, mode, reset]);
+  }, [bookId, isEditMode, reset]);
+
+  const isPageLoading =
+    isEditMode && loadedBookId !== bookId && failedBookId !== bookId;
 
   const canManageBook =
     role === "admin" ||
@@ -121,17 +123,20 @@ export default function BookForm({
     toast.success(
       mode === "edit"
         ? "Book updated successfully!"
-        : "Book created successfully!"
+        : "Book created successfully!",
     );
 
-    router.push(mode === "edit" && bookId ? `/books/${bookId}` : "/books");
+    router.replace(mode === "edit" && bookId ? `/books/${bookId}` : "/books");
     router.refresh();
   };
 
   if (isPageLoading || authLoading) {
     return (
       <div className="mx-auto flex w-full max-w-3xl items-center gap-3 rounded-[1.75rem] border border-stone-900/10 bg-white/60 px-5 py-6 shadow-[0_18px_40px_rgba(64,38,24,0.08)]">
-        <Loader2 aria-hidden="true" className="h-5 w-5 animate-spin text-stone-700" />
+        <Loader2
+          aria-hidden="true"
+          className="h-5 w-5 animate-spin text-stone-700"
+        />
         <span aria-live="polite" className="text-sm text-stone-600">
           Loading book form…
         </span>
@@ -205,7 +210,9 @@ export default function BookForm({
               rules={{ required: "Title is required" }}
               render={({ field, fieldState }) => (
                 <FormItem>
-                  <FormLabel className={fieldLabelClassName}>Book Title</FormLabel>
+                  <FormLabel className={fieldLabelClassName}>
+                    Book Title
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -246,7 +253,9 @@ export default function BookForm({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className={fieldLabelClassName}>Description</FormLabel>
+                  <FormLabel className={fieldLabelClassName}>
+                    Description
+                  </FormLabel>
                   <FormControl>
                     <Input
                       {...field}

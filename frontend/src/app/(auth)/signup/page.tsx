@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,16 +33,12 @@ const INITIAL_FORM_STATE: SignupFormState = {
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, isLoading, login, signup } = useAuth();
   const [form, setForm] = useState(INITIAL_FORM_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [nextPath, setNextPath] = useState(DEFAULT_NEXT_PATH);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setNextPath(params.get("next") || DEFAULT_NEXT_PATH);
-  }, []);
+  const nextPath = searchParams.get("next") || DEFAULT_NEXT_PATH;
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
@@ -51,7 +47,8 @@ export default function SignupPage() {
   }, [isAuthenticated, isLoading, nextPath, router]);
 
   const updateField =
-    (field: keyof SignupFormState) => (event: ChangeEvent<HTMLInputElement>) => {
+    (field: keyof SignupFormState) =>
+    (event: ChangeEvent<HTMLInputElement>) => {
       const { value } = event.target;
 
       setForm((currentForm) => ({

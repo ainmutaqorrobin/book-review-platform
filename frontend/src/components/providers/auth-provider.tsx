@@ -36,6 +36,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    void getCurrentUser().then((response) => {
+      if (!isMounted) {
+        return;
+      }
+
+      if (response.success && response.data) {
+        setUser(response.data);
+      } else {
+        setUser(null);
+      }
+
+      setIsLoading(false);
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const refreshUser = useCallback(async () => {
     setIsLoading(true);
     const response = await getCurrentUser();
@@ -49,10 +71,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  useEffect(() => {
-    void refreshUser();
-  }, [refreshUser]);
-
   const login = useCallback(
     async (username: string, password: string) => {
       const response = await loginRequest(username, password);
@@ -63,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       return response;
     },
-    [refreshUser]
+    [refreshUser],
   );
 
   const signup = useCallback((payload: SignupPayload) => {

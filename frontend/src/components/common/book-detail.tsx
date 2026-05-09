@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "../ui/skeleton";
@@ -43,7 +43,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
   const [book, setBook] = useState<Model | null>(null);
   const [reviews, setReviews] = useState<ReviewModel[]>([]);
   const [reviewPagination, setReviewPagination] = useState<PaginationMeta>(
-    DEFAULT_REVIEW_PAGINATION
+    DEFAULT_REVIEW_PAGINATION,
   );
   const [error, setError] = useState<string | null>(null);
   const [reviewsError, setReviewsError] = useState<string | null>(null);
@@ -68,7 +68,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
       if (reviewsResponse.success && reviewsResponse.data) {
         setReviews(reviewsResponse.data.items ?? []);
         setReviewPagination(
-          reviewsResponse.data.pagination ?? DEFAULT_REVIEW_PAGINATION
+          reviewsResponse.data.pagination ?? DEFAULT_REVIEW_PAGINATION,
         );
         setReviewsError(null);
       } else {
@@ -93,7 +93,9 @@ export default function BookDetail({ bookId }: BookDetailProps) {
         return;
       }
 
-      const shouldRefresh = window.sessionStorage.getItem("refresh-book-detail");
+      const shouldRefresh = window.sessionStorage.getItem(
+        "refresh-book-detail",
+      );
 
       if (shouldRefresh !== String(bookId)) {
         return;
@@ -210,7 +212,10 @@ export default function BookDetail({ bookId }: BookDetailProps) {
                 variant="outline"
                 className="h-10 rounded-full border-stone-300 bg-[#fffaf2] px-5 text-stone-700 hover:border-stone-500 hover:bg-white"
               >
-                <Link href={`/books/${id}/edit`}>Edit</Link>
+                <Link href={`/books/${id}/edit`}>
+                  <Pencil aria-hidden="true" />
+                  Edit
+                </Link>
               </Button>
               <ConfirmationDialog
                 title={`Delete "${title}"?`}
@@ -218,7 +223,11 @@ export default function BookDetail({ bookId }: BookDetailProps) {
                 actionText="Confirm Delete"
                 onConfirm={handleDelete}
               >
-                <Button variant="destructive" className="h-10 rounded-full px-5">
+                <Button
+                  variant="destructive"
+                  className="h-10 rounded-full px-5"
+                >
+                  <Trash2 aria-hidden="true" />
                   Delete
                 </Button>
               </ConfirmationDialog>
@@ -228,8 +237,8 @@ export default function BookDetail({ bookId }: BookDetailProps) {
         </div>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <article className="overflow-hidden rounded-[2rem] border border-stone-900/10 bg-[#201814] text-stone-100 shadow-[0_24px_70px_rgba(42,26,18,0.24)]">
+      <div className="grid gap-6 lg:items-start lg:grid-cols-[0.85fr_1.15fr]">
+        <article className="overflow-hidden rounded-[2rem] border border-stone-900/10 bg-[#201814] text-stone-100 shadow-[0_24px_70px_rgba(42,26,18,0.24)] lg:sticky lg:top-24">
           <div className="relative h-[420px]">
             <Image
               src={cover_image_url || FALLBACK_IMAGE}
@@ -245,7 +254,8 @@ export default function BookDetail({ bookId }: BookDetailProps) {
               Added {formatDate(created_at || "")}
             </p>
             <p className="text-sm leading-7 text-stone-300">
-              {description || "No description has been added for this book yet."}
+              {description ||
+                "No description has been added for this book yet."}
             </p>
           </div>
         </article>
@@ -274,7 +284,8 @@ export default function BookDetail({ bookId }: BookDetailProps) {
                   Reviews
                 </h2>
                 <p className="mt-2 text-sm text-stone-600">
-                  Showing {reviews.length} of {reviewPagination.totalItems} reviews
+                  Showing {reviews.length} of {reviewPagination.totalItems}{" "}
+                  reviews
                 </p>
               </div>
               <Button
