@@ -128,7 +128,6 @@ jobs:
           script: |
             set -e
             cd "${{ secrets.VPS_APP_DIR }}"
-            git pull --ff-only origin main
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
             docker compose pull
             docker compose up -d
