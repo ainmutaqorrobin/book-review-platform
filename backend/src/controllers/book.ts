@@ -29,7 +29,18 @@ export const getBooks = async (
     );
     const query =
       typeof req.query.query === "string" ? req.query.query.trim() : undefined;
-    const books = await getAllBooks({ page, limit, query });
+    const scope = req.query.scope === "mine" ? "mine" : "all";
+
+    if (scope === "mine" && !req.user) {
+      throw new AppError("Sign in to view your books", 401);
+    }
+
+    const books = await getAllBooks({
+      page,
+      limit,
+      query,
+      ownerUserId: scope === "mine" ? req.user?.userId : undefined,
+    });
 
     return sendResponse(res, 200, "Books retrieved successfully", books);
   } catch (err) {

@@ -42,3 +42,24 @@ export const findUserById = async (id: number): Promise<User | null> => {
 
   return result.rows[0] || null;
 };
+
+export const findUserWithPasswordById = async (
+  id: number,
+): Promise<User | null> => {
+  const result = await pool.query(`SELECT * FROM users WHERE id = $1`, [id]);
+  return result.rows[0] || null;
+};
+
+export const updateUserPassword = async (id: number, password: string) => {
+  const password_hash = await hash(password, 10);
+
+  const result = await pool.query(
+    `UPDATE users
+     SET password_hash = $1
+     WHERE id = $2
+     RETURNING id, username, name, role, created_at`,
+    [password_hash, id],
+  );
+
+  return result.rows[0] || null;
+};

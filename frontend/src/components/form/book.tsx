@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormControl,
@@ -42,6 +43,8 @@ const fieldLabelClassName =
   "mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-stone-600";
 const fieldInputClassName =
   "h-12 rounded-2xl border-stone-300/80 bg-white/85 px-4 shadow-none placeholder:text-stone-400 focus-visible:border-stone-500 focus-visible:ring-stone-500/20";
+const fieldTextareaClassName =
+  "min-h-36 rounded-[1.5rem] border-stone-300/80 bg-white/85 px-4 py-3 text-sm leading-7 shadow-none placeholder:text-stone-400 focus-visible:border-stone-500 focus-visible:ring-stone-500/20";
 
 export default function BookForm({ mode = "create", bookId }: BookFormProps) {
   const router = useRouter();
@@ -257,12 +260,12 @@ export default function BookForm({ mode = "create", bookId }: BookFormProps) {
                     Description
                   </FormLabel>
                   <FormControl>
-                    <Input
+                    <Textarea
                       {...field}
                       name="description"
                       autoComplete="off"
-                      placeholder="Enter book description"
-                      className={fieldInputClassName}
+                      placeholder="Write a short summary, context, or longer description for the book"
+                      className={fieldTextareaClassName}
                     />
                   </FormControl>
                 </FormItem>

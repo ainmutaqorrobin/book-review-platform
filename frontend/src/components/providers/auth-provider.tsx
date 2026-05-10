@@ -10,8 +10,10 @@ import {
 } from "react";
 import {
   AuthUser,
+  ChangePasswordPayload,
   Role,
   SignupPayload,
+  changePassword as changePasswordRequest,
   getCurrentUser,
   login as loginRequest,
   logout as logoutRequest,
@@ -27,6 +29,9 @@ interface AuthContextValue {
   refreshUser: () => Promise<void>;
   login: (username: string, password: string) => Promise<ApiResponse<null>>;
   signup: (payload: SignupPayload) => Promise<ApiResponse<AuthUser>>;
+  changePassword: (
+    payload: ChangePasswordPayload,
+  ) => Promise<ApiResponse<AuthUser>>;
   logout: () => Promise<ApiResponse<null>>;
 }
 
@@ -88,6 +93,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return signupRequest(payload);
   }, []);
 
+  const changePassword = useCallback(
+    async (payload: ChangePasswordPayload) => {
+      const response = await changePasswordRequest(payload);
+
+      if (response.success) {
+        await refreshUser();
+      }
+
+      return response;
+    },
+    [refreshUser],
+  );
+
   const logout = useCallback(async () => {
     const response = await logoutRequest();
     setUser(null);
@@ -104,6 +122,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         refreshUser,
         login,
         signup,
+        changePassword,
         logout,
       }}
     >

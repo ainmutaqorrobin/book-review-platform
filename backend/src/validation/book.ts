@@ -8,6 +8,10 @@ export const getBooksValidation = [
     .isString()
     .withMessage("Query must be a string")
     .trim(),
+  query("scope")
+    .optional()
+    .isIn(["all", "mine"])
+    .withMessage("Scope must be either all or mine"),
 ];
 
 export const getBookValidation = [

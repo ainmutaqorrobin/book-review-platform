@@ -20,6 +20,9 @@ export interface PaginatedData<T> {
   pagination: PaginationMeta;
 }
 
+const DEFAULT_API_ERROR_MESSAGE =
+  "We couldn't connect right now. Please try again in a moment.";
+
 export async function fetcher<T>(
   path: string,
   options: AxiosRequestConfig = {},
@@ -44,7 +47,7 @@ export async function fetcher<T>(
   } catch (error: any) {
     return {
       success: false,
-      message: error?.response?.data?.message || "Backend not reachable",
+      message: error?.response?.data?.message || DEFAULT_API_ERROR_MESSAGE,
       data: fallbackData as T,
     };
   }

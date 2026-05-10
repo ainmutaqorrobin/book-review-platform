@@ -16,6 +16,11 @@ export interface SignupPayload {
   password: string;
 }
 
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export function getCurrentUser(): Promise<ApiResponse<AuthUser>> {
   return fetcher<AuthUser>("/auth/me");
 }
@@ -38,5 +43,14 @@ export function login(
   return fetcher<null>("/auth/login", {
     method: "POST",
     data: { username, password },
+  });
+}
+
+export function changePassword(
+  payload: ChangePasswordPayload,
+): Promise<ApiResponse<AuthUser>> {
+  return fetcher<AuthUser>("/auth/password", {
+    method: "PATCH",
+    data: payload,
   });
 }

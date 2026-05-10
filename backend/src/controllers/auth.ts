@@ -1,5 +1,11 @@
 import { Request, Response, NextFunction } from "express";
-import { createUser, findUserById, findUserByUsername } from "../models/user";
+import {
+  createUser,
+  findUserById,
+  findUserByUsername,
+  findUserWithPasswordById,
+  updateUserPassword,
+} from "../models/user";
 import { AppError } from "../utils/appError";
 import jwt from "jsonwebtoken";
 import { compare } from "bcrypt";
@@ -85,6 +91,45 @@ export const logout = async (
       sameSite: "strict",
     });
     return sendResponse(res, 200, "Logged out", null);
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const changePassword = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    if (!req.user) throw new AppError("Authentication required", 401);
+
+    const { currentPassword, newPassword } = req.body;
+    const user = await findUserWithPasswordById(req.user.userId);
+
+    if (!user) throw new AppError("User not found", 404);
+
+    const isCurrentPasswordValid = await compare(
+      currentPassword,
+      user.password_hash,
+    );
+
+    if (!isCurrentPasswordValid) {
+      throw new AppError("Current password is incorrect", 400);
+    }
+
+    if (currentPassword === newPassword) {
+      throw new AppError(
+        "New password must be different from your current password",
+        400,
+      );
+    }
+
+    const updatedUser = await updateUserPassword(req.user.userId, newPassword);
+
+    if (!updatedUser) throw new AppError("User not found", 404);
+
+    return sendResponse(res, 200, "Password changed successfully", updatedUser);
   } catch (err) {
     next(err);
   }

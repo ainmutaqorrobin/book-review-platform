@@ -27,7 +27,7 @@ import { reviewCreateRateLimiter } from "../middlewares/rateLimiter";
 
 const router = Router();
 
-router.get("/", getBooksValidation, handleValidation, getBooks);
+router.get("/", optionalAuth, getBooksValidation, handleValidation, getBooks);
 
 router.get("/:bookId", getBookValidation, handleValidation, getBook);
 

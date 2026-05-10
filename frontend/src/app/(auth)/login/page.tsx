@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,14 +30,22 @@ const INITIAL_FORM_STATE: LoginFormState = {
   password: "",
 };
 
+function getInitialNextPath() {
+  if (typeof window === "undefined") {
+    return DEFAULT_NEXT_PATH;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  return params.get("next") || DEFAULT_NEXT_PATH;
+}
+
 export default function LoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { isAuthenticated, isLoading, login } = useAuth();
   const [form, setForm] = useState(INITIAL_FORM_STATE);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const nextPath = searchParams.get("next") || DEFAULT_NEXT_PATH;
+  const [nextPath] = useState(getInitialNextPath);
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {

@@ -18,3 +18,16 @@ export const loginValidation = [
     .withMessage("Username is required"),
   body("password").isString().notEmpty().withMessage("Password is required"),
 ];
+
+export const changePasswordValidation = [
+  body("currentPassword")
+    .isString()
+    .notEmpty()
+    .withMessage("Current password is required"),
+  body("newPassword")
+    .isString()
+    .notEmpty()
+    .withMessage("New password is required")
+    .isLength({ min: 6 })
+    .withMessage("New password must be at least 6 characters"),
+];

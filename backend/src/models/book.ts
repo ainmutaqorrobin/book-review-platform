@@ -10,12 +10,14 @@ interface GetAllBooksOptions {
   page: number;
   limit: number;
   query?: string;
+  ownerUserId?: number;
 }
 
 export const getAllBooks = async ({
   page,
   limit,
   query,
+  ownerUserId,
 }: GetAllBooksOptions): Promise<PaginatedData<Record<string, unknown>>> => {
   const trimmedQuery = query?.trim();
   const filters: string[] = [];
@@ -23,7 +25,15 @@ export const getAllBooks = async ({
 
   if (trimmedQuery) {
     params.push(`%${trimmedQuery}%`);
-    filters.push("(title ILIKE $1 OR author ILIKE $1 OR description ILIKE $1)");
+    const queryPosition = params.length;
+    filters.push(
+      `(title ILIKE $${queryPosition} OR author ILIKE $${queryPosition} OR description ILIKE $${queryPosition})`,
+    );
+  }
+
+  if (typeof ownerUserId === "number") {
+    params.push(ownerUserId);
+    filters.push(`owner_user_id = $${params.length}`);
   }
 
   const whereClause =

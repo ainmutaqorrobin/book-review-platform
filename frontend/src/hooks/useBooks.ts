@@ -9,6 +9,7 @@ interface UseBooksOptions {
   page?: number;
   limit?: number;
   query?: string;
+  scope?: "all" | "mine";
   autoFetch?: boolean;
   showToast?: boolean;
 }
@@ -26,6 +27,7 @@ export function useBooks({
   page = 1,
   limit = 9,
   query = "",
+  scope = "all",
   autoFetch = true,
   showToast = true,
 }: UseBooksOptions = {}) {
@@ -43,6 +45,7 @@ export function useBooks({
         page,
         limit,
         query: query.trim() || undefined,
+        scope,
       });
 
       if (res.success && res.data) {
@@ -73,7 +76,7 @@ export function useBooks({
     } finally {
       setLoading(false);
     }
-  }, [limit, page, query, showToast]);
+  }, [limit, page, query, scope, showToast]);
 
   const refresh = useCallback(async () => {
     await fetchBooks();

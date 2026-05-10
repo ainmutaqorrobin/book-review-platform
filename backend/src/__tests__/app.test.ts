@@ -1,3 +1,4 @@
+import { hash } from "bcrypt";
 import jwt from "jsonwebtoken";
 import request from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -122,6 +123,32 @@ describe("Auth and RBAC", () => {
     expect(response.body.data.items[0].title).toBe("Clean Code");
     expect(mockQuery.mock.calls[0]?.[1]).toEqual(["%clean%"]);
     expect(mockQuery.mock.calls[1]?.[1]).toEqual(["%clean%", 9, 0]);
+  });
+
+  it("filters paginated books to the signed-in owner's collection", async () => {
+    mockQuery
+      .mockResolvedValueOnce({
+        rows: [{ total: 1 }],
+      })
+      .mockResolvedValueOnce({
+        rows: [{ id: 4, title: "Mine Only", author: "Owner", owner_user_id: 11 }],
+      });
+
+    const response = await request(app)
+      .get("/books?scope=mine")
+      .set("Cookie", createAuthCookie(11, "user"));
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.items[0].owner_user_id).toBe(11);
+    expect(mockQuery.mock.calls[0]?.[1]).toEqual([11]);
+    expect(mockQuery.mock.calls[1]?.[1]).toEqual([11, 9, 0]);
+  });
+
+  it("rejects owner-scoped books for anonymous users", async () => {
+    const response = await request(app).get("/books?scope=mine");
+
+    expect(response.status).toBe(401);
+    expect(response.body.message).toMatch(/sign in to view your books/i);
   });
 
   it("rejects invalid book pagination params", async () => {
@@ -370,5 +397,77 @@ describe("Auth and RBAC", () => {
     expect(response.body.data.role).toBe("user");
     const params = mockQuery.mock.calls[1]?.[1] as unknown[];
     expect(params[3]).toBe("user");
+  });
+
+  it("lets authenticated users change their password", async () => {
+    const currentPasswordHash = await hash("secret123", 10);
+
+    mockQuery
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 15,
+            username: "reader",
+            name: "Reader",
+            role: "user",
+            password_hash: currentPasswordHash,
+            created_at: new Date().toISOString(),
+          },
+        ],
+      })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 15,
+            username: "reader",
+            name: "Reader",
+            role: "user",
+            created_at: new Date().toISOString(),
+          },
+        ],
+      });
+
+    const response = await request(app)
+      .patch("/auth/password")
+      .set("Cookie", createAuthCookie(15, "user"))
+      .send({
+        currentPassword: "secret123",
+        newPassword: "newsecret123",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toMatch(/password changed successfully/i);
+    const params = mockQuery.mock.calls[1]?.[1] as unknown[];
+    expect(params[1]).toBe(15);
+    expect(typeof params[0]).toBe("string");
+    expect(params[0]).not.toBe("newsecret123");
+  });
+
+  it("rejects password changes when the current password is wrong", async () => {
+    const currentPasswordHash = await hash("secret123", 10);
+
+    mockQuery.mockResolvedValueOnce({
+      rows: [
+        {
+          id: 15,
+          username: "reader",
+          name: "Reader",
+          role: "user",
+          password_hash: currentPasswordHash,
+          created_at: new Date().toISOString(),
+        },
+      ],
+    });
+
+    const response = await request(app)
+      .patch("/auth/password")
+      .set("Cookie", createAuthCookie(15, "user"))
+      .send({
+        currentPassword: "wrong-pass",
+        newPassword: "newsecret123",
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toMatch(/current password is incorrect/i);
   });
 });

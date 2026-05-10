@@ -1,7 +1,17 @@
 import { Router } from "express";
-import { signup, login, getCurrentUser, logout } from "../controllers/auth";
+import {
+  signup,
+  login,
+  getCurrentUser,
+  logout,
+  changePassword,
+} from "../controllers/auth";
 import { handleValidation } from "../middlewares/validateRequest";
-import { loginValidation, signupValidation } from "../validation/user";
+import {
+  changePasswordValidation,
+  loginValidation,
+  signupValidation,
+} from "../validation/user";
 import { requireAuth } from "../middlewares/auth";
 
 const router = Router();
@@ -13,5 +23,13 @@ router.post("/signup", signupValidation, handleValidation, signup);
 router.post("/login", loginValidation, handleValidation, login);
 
 router.post("/logout", requireAuth, logout);
+
+router.patch(
+  "/password",
+  requireAuth,
+  changePasswordValidation,
+  handleValidation,
+  changePassword,
+);
 
 export { router as AuthRouter };
