@@ -1,5 +1,6 @@
 services:
   db:
+    container_name: book-review-platform-db
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
@@ -20,6 +21,7 @@ services:
       start_period: 10s
 
   backend:
+    container_name: book-review-platform-backend
     image: ${DOCKER_USERNAME}/book-review-backend:${IMAGE_TAG:-latest}
     restart: unless-stopped
     depends_on:
@@ -56,6 +58,7 @@ services:
       start_period: 20s
 
   frontend:
+    container_name: book-review-platform-frontend
     image: ${DOCKER_USERNAME}/book-review-frontend:${IMAGE_TAG:-latest}
     restart: unless-stopped
     depends_on:
