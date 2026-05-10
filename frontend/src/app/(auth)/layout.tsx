@@ -1,6 +1,7 @@
 import "../globals.css";
 import Link from "next/link";
 import { ReactNode } from "react";
+import { Metadata } from "next";
 import { AuthProvider } from "@/components/providers/auth-provider";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -8,6 +9,15 @@ const editorialLinkClassName = buttonVariants({
   variant: "outline",
   size: "sm",
 });
+
+export const metadata: Metadata = {
+  title: "Book Review Platform",
+  description: "Discover and review books you love",
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+  },
+};
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (

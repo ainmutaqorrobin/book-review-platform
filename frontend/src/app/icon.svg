@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title>BookReview icon</title>
+  <desc>An editorial-style open book with a warm bookmark.</desc>
+  <defs>
+    <linearGradient id="pageGlow" x1="10%" y1="10%" x2="90%" y2="90%">
+      <stop offset="0%" stop-color="#fff9ef" />
+      <stop offset="100%" stop-color="#f1dfc7" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="18" fill="#201814" />
+  <path
+    d="M12 17.5c0-2.48 2.02-4.5 4.5-4.5h13.75c3.07 0 5.93 1.31 7.75 3.55C39.82 14.31 42.68 13 45.75 13H49.5c2.48 0 4.5 2.02 4.5 4.5v24.75c0 1.52-1.23 2.75-2.75 2.75h-5.5c-3.43 0-6.61 1.43-8.78 3.95L35.5 50.8c-1.4 1.64-3.98 1.64-5.39 0l-1.47-1.85c-2.17-2.52-5.36-3.95-8.79-3.95h-5.1A2.75 2.75 0 0 1 12 42.25V17.5Z"
+    fill="url(#pageGlow)"
+  />
+  <path
+    d="M32 18.5v27.25"
+    stroke="#c29a63"
+    stroke-linecap="round"
+    stroke-width="1.8"
+    opacity="0.9"
+  />
+  <path
+    d="M18 22.5h9.25M18 27.5h10.5M18 32.5h8.25M36.75 22.5H46M36.75 27.5h9.5M36.75 32.5h7.5"
+    stroke="#8d6942"
+    stroke-linecap="round"
+    stroke-width="1.8"
+    opacity="0.72"
+  />
+  <path
+    d="M41 11h7a1 1 0 0 1 1 1v17.2a1 1 0 0 1-1.63.78l-2.87-2.4a1 1 0 0 0-1.28 0l-2.59 2.12A1 1 0 0 1 39 28.92V13a2 2 0 0 1 2-2Z"
+    fill="#b8753f"
+  />
+</svg>
