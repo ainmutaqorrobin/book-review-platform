@@ -130,6 +130,6 @@ jobs:
             cd "${{ secrets.VPS_APP_DIR }}"
             git pull --ff-only origin main
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-            docker compose --env-file .env.production -f docker-compose.production.yml pull
-            docker compose --env-file .env.production -f docker-compose.production.yml up -d --remove-orphans
+            docker compose pull
+            docker compose up -d
             docker image prune -f
