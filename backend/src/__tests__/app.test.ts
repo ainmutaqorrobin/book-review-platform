@@ -131,7 +131,9 @@ describe("Auth and RBAC", () => {
         rows: [{ total: 1 }],
       })
       .mockResolvedValueOnce({
-        rows: [{ id: 4, title: "Mine Only", author: "Owner", owner_user_id: 11 }],
+        rows: [
+          { id: 4, title: "Mine Only", author: "Owner", owner_user_id: 11 },
+        ],
       });
 
     const response = await request(app)

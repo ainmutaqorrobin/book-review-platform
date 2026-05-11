@@ -224,7 +224,9 @@ export default function BooksListPage() {
               asChild
               className="h-11 rounded-full bg-stone-900 px-5 text-stone-50 hover:bg-stone-800"
             >
-              <Link href={`/login?next=${encodeURIComponent(YOUR_BOOKS_NEXT_PATH)}`}>
+              <Link
+                href={`/login?next=${encodeURIComponent(YOUR_BOOKS_NEXT_PATH)}`}
+              >
                 Log In
               </Link>
             </Button>
@@ -233,7 +235,9 @@ export default function BooksListPage() {
               variant="outline"
               className="h-11 rounded-full border-stone-300 bg-[#fffaf2] px-5 text-stone-700 hover:border-stone-500 hover:bg-white"
             >
-              <Link href={`/signup?next=${encodeURIComponent(YOUR_BOOKS_NEXT_PATH)}`}>
+              <Link
+                href={`/signup?next=${encodeURIComponent(YOUR_BOOKS_NEXT_PATH)}`}
+              >
                 Create Account
               </Link>
             </Button>

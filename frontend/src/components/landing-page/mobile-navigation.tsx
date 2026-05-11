@@ -35,7 +35,11 @@ export default function MobileNavigation({
     >
       <nav className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 sm:px-6">
         {canManageBooks && (
-          <Link href="/create-book" className={navLinkClassName} onClick={onClose}>
+          <Link
+            href="/create-book"
+            className={navLinkClassName}
+            onClick={onClose}
+          >
             Add a Book
           </Link>
         )}

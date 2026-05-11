@@ -59,7 +59,9 @@ export async function getBooks(
       ...(params.page ? { page: params.page } : {}),
       ...(params.limit ? { limit: params.limit } : {}),
       ...(params.query ? { query: params.query } : {}),
-      ...(params.scope && params.scope !== "all" ? { scope: params.scope } : {}),
+      ...(params.scope && params.scope !== "all"
+        ? { scope: params.scope }
+        : {}),
     },
   });
 }

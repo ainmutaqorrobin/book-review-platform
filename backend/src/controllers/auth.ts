@@ -71,8 +71,9 @@ function getJwtExpiryConfig(value: string) {
 
   return {
     cookieMaxAgeMs: expiresInMs,
-    jwtExpiresIn:
-      (/^\d+$/.test(value.trim()) ? expiresInSeconds : value.trim()) as SignOptions["expiresIn"],
+    jwtExpiresIn: (/^\d+$/.test(value.trim())
+      ? expiresInSeconds
+      : value.trim()) as SignOptions["expiresIn"],
   };
 }
 

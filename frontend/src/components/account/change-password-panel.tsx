@@ -154,8 +154,8 @@ export default function ChangePasswordPanel() {
         </h1>
         <p className="mt-4 text-sm leading-7 text-stone-300">
           Use your current password to confirm the change, then set a stronger
-          replacement you will remember. This keeps account access in your
-          hands without adding unnecessary friction.
+          replacement you will remember. This keeps account access in your hands
+          without adding unnecessary friction.
         </p>
         <div className="mt-8">
           <BackButton fallbackHref="/books" />
