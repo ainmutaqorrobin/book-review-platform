@@ -21,8 +21,8 @@ View [API Documentation](https://documenter.getpostman.com/view/24966843/2sB3Wnx
 | ------ | ------------------------- | --------------------------------------------------------------------------------------- |
 | GET    | `/books`                  | Get list of all books                                                                   |
 | GET    | `/books/{bookId}`         | Get detailed information of a book                                                      |
-| POST   | `/books`                  | Create a book (body requires `title`, `author`, `description`, `cover_image_url`)       |
-| PUT    | `/books/{bookId}`         | Update a book (body may include `title`, `author`, `description`, `cover_image_url`)    |
+| POST   | `/books`                  | Create a book with JSON or multipart form data; supports either `cover_image_url` or a `cover` file |
+| PUT    | `/books/{bookId}`         | Update a book with JSON or multipart form data; supports either `cover_image_url` or a `cover` file |
 | DELETE | `/books/{bookId}`         | Delete a book by its ID                                                                 |
 | POST   | `/books/{bookId}/reviews` | Create a review for the selected book (body requires `reviewer_name`, `text`, `rating`) |
 
@@ -47,7 +47,7 @@ View [API Documentation](https://documenter.getpostman.com/view/24966843/2sB3Wnx
 
 ## 🛠 Usage & Setup
 
-1. Ensure you have PostgreSQL configured and the required environment variables set (e.g., `DATABASE_URL`, `PORT`, etc.).
+1. Ensure you have PostgreSQL configured and the required environment variables set (e.g., `DATABASE_URL`, `PORT`, S3 storage configuration, etc.).
 2. Run database migrations or apply your schema.
 3. Seed dummy data when needed with `npm run seed`. This runs `db/sample.sql` against `DATABASE_URL` and creates or updates an admin user.
 4. Start the server (e.g., `npm run dev` for development or `npm run start` for production build).

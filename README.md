@@ -33,6 +33,8 @@ Book Review Platform is a full-stack app for browsing books, writing reviews, an
    - Frontend: `http://localhost:3000`
    - Backend API: `http://localhost:4000`
    - Database health check: `http://localhost:4000/database`
+   - RustFS S3 endpoint: `http://localhost:9000`
+   - RustFS console: `http://localhost:9001`
 
 6. Seed dummy data when you want:
 
@@ -50,6 +52,8 @@ The local compose file now runs:
 - `frontend` from `./frontend` in development mode with hot reload
 - `backend` from `./backend` in development mode with hot reload
 - `db` from `postgres:16-alpine`
+- `rustfs` from `rustfs/rustfs:latest` for local object storage
+- `rustfs-bucket-init` to create the `book-review` bucket automatically
 
 The database schema is initialized from `backend/db/schema.sql` the first time the Postgres volume is created.
 Source code is bind-mounted into the frontend and backend containers, while `node_modules` stay inside Docker volumes so you can edit locally without reinstalling on every container start.
@@ -92,6 +96,16 @@ It does the following:
 
 - `.env.example`: local Docker and local browser settings
 - `.env.production.example`: production values for the VPS copy at `.env.production`
+
+Storage-related env vars now include:
+
+- `S3_ENDPOINT`
+- `S3_PUBLIC_ENDPOINT`
+- `S3_ACCESS_KEY`
+- `S3_SECRET_KEY`
+- `S3_BUCKET`
+- `S3_REGION`
+- `S3_FORCE_PATH_STYLE`
 
 Admin seed configuration is also environment-driven:
 
