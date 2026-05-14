@@ -10,25 +10,17 @@ import { AppError } from "../utils/appError";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import { compare } from "bcrypt";
 import { sendResponse } from "../utils/responseHelper";
+import {
+  getJwtExpiresIn as getJwtExpiresInEnv,
+  getJwtSecret,
+} from "../config/env";
 
 function getSecretKey() {
-  const secretKey = process.env.JWT_SECRET?.trim();
-
-  if (!secretKey) {
-    throw new Error("JWT_SECRET is required");
-  }
-
-  return secretKey;
+  return getJwtSecret();
 }
 
 function getJwtExpiresIn() {
-  const jwtExpiresIn = process.env.JWT_EXPIRES_IN?.trim();
-
-  if (!jwtExpiresIn) {
-    throw new Error("JWT_EXPIRES_IN is required");
-  }
-
-  return jwtExpiresIn;
+  return getJwtExpiresInEnv();
 }
 
 function parseDurationToMilliseconds(value: string) {

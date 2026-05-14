@@ -3,6 +3,11 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import {
+  getS3Region,
+  getStorageEnv,
+  isS3ForcePathStyleEnabled,
+} from "../config/env";
 
 export type CoverImageSource = "upload" | "external" | null;
 
@@ -20,13 +25,7 @@ const MIME_EXTENSION_MAP: Record<string, string> = {
 };
 
 function getRequiredEnv(name: string) {
-  const value = process.env[name]?.trim();
-
-  if (!value) {
-    throw new Error(`Missing required storage configuration: ${name}`);
-  }
-
-  return value;
+  return getStorageEnv(name);
 }
 
 function getPublicEndpointBase() {
@@ -39,13 +38,13 @@ function getBucketName() {
 
 function createS3Client() {
   return new S3Client({
-    region: process.env.S3_REGION?.trim() || "us-east-1",
+    region: getS3Region(),
     endpoint: getRequiredEnv("S3_ENDPOINT"),
     credentials: {
       accessKeyId: getRequiredEnv("S3_ACCESS_KEY"),
       secretAccessKey: getRequiredEnv("S3_SECRET_KEY"),
     },
-    forcePathStyle: process.env.S3_FORCE_PATH_STYLE === "true",
+    forcePathStyle: isS3ForcePathStyleEnabled(),
   });
 }
 

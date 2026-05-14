@@ -50,8 +50,9 @@ View [API Documentation](https://documenter.getpostman.com/view/24966843/2sB3Wnx
 1. Ensure you have PostgreSQL configured and the required environment variables set (e.g., `DATABASE_URL`, `PORT`, S3 storage configuration, etc.).
 2. Run database migrations or apply your schema.
 3. Seed dummy data when needed with `npm run seed`. This runs `db/sample.sql` against `DATABASE_URL` and creates or updates an admin user.
-4. Start the server (e.g., `npm run dev` for development or `npm run start` for production build).
-5. Use the endpoints above to interact with the API.
+4. Check the backend environment configuration with `npm run env:check`.
+5. Start the server (e.g., `npm run dev` for development or `npm run start` for production build).
+6. Use the endpoints above to interact with the API.
 
 For local development, the default seeded admin credentials are:
 
@@ -59,6 +60,10 @@ For local development, the default seeded admin credentials are:
 - Password: `admin12345`
 
 These can be overridden with `ADMIN_SEED_USERNAME`, `ADMIN_SEED_NAME`, and `ADMIN_SEED_PASSWORD`.
+
+Request logging is enabled by default through structured JSON logs to stdout. Each response includes an `X-Request-Id` header and each request log includes the method, path, status code, response time, IP, user agent, and authenticated user context when available. Set `LOG_LEVEL` to control verbosity (`info` by default). Sensitive values such as auth headers, cookies, and password fields are redacted from logs.
+
+Environment validation also runs at startup. It reports which variables are explicitly set, which ones are using fallback defaults, and which optional feature variables are missing. Required startup variables still fail fast. `PORT` is the backend runtime port, while `BACKEND_PORT` in the root env files is only the Docker host port mapping.
 
 ---
 

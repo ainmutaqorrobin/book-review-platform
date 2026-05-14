@@ -19,6 +19,7 @@ import {
   serializeBookRecord,
   uploadBookCover,
 } from "../storage/bookCovers";
+import { logger } from "../services/logger";
 
 const BOOKS_DEFAULT_LIMIT = 9;
 
@@ -45,10 +46,13 @@ async function deleteStoredCoverObjectSafely(
   try {
     await deleteStoredCoverObject(coverImageValue);
   } catch (error) {
-    console.error("Failed to delete stored cover object", {
-      coverImageValue,
-      error,
-    });
+    logger.error(
+      {
+        err: error,
+        coverImageValue,
+      },
+      "Failed to delete stored cover object",
+    );
   }
 }
 
@@ -172,9 +176,13 @@ export const createSingleBook = async (
       try {
         await deleteBook(createdBook.id);
       } catch (rollbackError) {
-        console.error("Failed to roll back book creation after cover upload", {
-          rollbackError,
-        });
+        logger.error(
+          {
+            err: rollbackError,
+            bookId: createdBook.id,
+          },
+          "Failed to roll back book creation after cover upload",
+        );
       }
 
       throw error;

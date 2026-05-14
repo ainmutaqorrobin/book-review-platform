@@ -1,14 +1,13 @@
-import { config } from "dotenv";
 import { Pool } from "pg";
-
-config();
+import { getDatabaseUrl } from "./env";
+import { logger } from "../services/logger";
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: getDatabaseUrl(),
 });
 
 pool.on("connect", () => {
-  console.log("✅ Connected to PostgreSQL database");
+  logger.info("Connected to PostgreSQL database");
 });
 
 export default pool;

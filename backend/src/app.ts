@@ -11,19 +11,10 @@ import { Mastra } from "@mastra/core";
 import { analyzeAgents } from "./mastra/agents/analyze-agent";
 import { AuthRouter } from "./routes/auth";
 import cookieParser from "cookie-parser";
+import { requestLogger } from "./middlewares/requestLogger";
+import { getAllowedOrigins } from "./config/env";
 const app = express();
-
-const defaultAllowedOrigins = [
-  "http://localhost:3000",
-  "https://book-review.mutaqorrobin.online",
-];
-
-const allowedOrigins = (
-  process.env.CORS_ALLOWED_ORIGINS ?? defaultAllowedOrigins.join(",")
-)
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
+const allowedOrigins = getAllowedOrigins();
 
 const corsOptions: CorsOptions = {
   origin(origin, callback) {
@@ -46,6 +37,7 @@ const corsOptions: CorsOptions = {
 app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(json());
+app.use(requestLogger);
 
 app.use(globalRateLimiter);
 

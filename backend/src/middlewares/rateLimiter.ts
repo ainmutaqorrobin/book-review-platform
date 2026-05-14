@@ -1,12 +1,14 @@
 import { Request } from "express";
 import { rateLimit } from "express-rate-limit";
+import {
+  getGlobalRateLimitMax,
+  getReviewRateLimitMax,
+  getReviewRateLimitWindowMs,
+} from "../config/env";
 
 const GLOBAL_WINDOW_MS = 15 * 60 * 1000;
-const GLOBAL_LIMIT = 100;
-const REVIEW_WINDOW_MS = Number(
-  process.env.REVIEW_RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000,
-);
-const REVIEW_LIMIT = Number(process.env.REVIEW_RATE_LIMIT_MAX || 300);
+const REVIEW_WINDOW_MS = getReviewRateLimitWindowMs();
+const REVIEW_LIMIT = getReviewRateLimitMax();
 
 function isReviewCreateRequest(req: Request) {
   if (req.method !== "POST") return false;
@@ -19,7 +21,7 @@ function isReviewCreateRequest(req: Request) {
 
 export const globalRateLimiter = rateLimit({
   windowMs: GLOBAL_WINDOW_MS,
-  limit: Number(process.env.GLOBAL_RATE_LIMIT_MAX || GLOBAL_LIMIT),
+  limit: getGlobalRateLimitMax(),
   standardHeaders: "draft-8",
   legacyHeaders: false,
   skip: (req) => isReviewCreateRequest(req),

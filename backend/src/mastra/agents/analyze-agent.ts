@@ -1,4 +1,5 @@
 import { Agent } from "@mastra/core/agent";
+import { logger } from "../../services/logger";
 
 export const analyzeAgents = new Agent({
   name: "analyze-agent",
@@ -44,18 +45,19 @@ JSON Response:`;
       sentimentScore = parsed.sentimentScore;
       tags = parsed.tags;
     } catch (e) {
-      console.error(
-        "Failed to parse AI output for sentiment/tags:",
-        sentimentRes.text,
+      logger.warn(
+        {
+          err: e,
+          sentimentResponse: sentimentRes.text,
+        },
+        "Failed to parse AI output for sentiment/tags",
       );
-      console.error("Parse error:", e);
     }
 
     const result = { summary, sentimentLabel, sentimentScore, tags };
     return result;
   } catch (error) {
-    console.error("=== ERROR in enrichReviewText ===");
-    console.error(error);
+    logger.error({ err: error }, "Failed to enrich review text");
     throw error;
   }
 }

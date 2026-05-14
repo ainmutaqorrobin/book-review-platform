@@ -54,6 +54,24 @@ beforeEach(() => {
 });
 
 describe("Auth and RBAC", () => {
+  it("adds an X-Request-Id header to responses", async () => {
+    const response = await request(app).get("/");
+
+    expect(response.status).toBe(200);
+    expect(response.headers["x-request-id"]).toMatch(
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+    );
+  });
+
+  it("preserves an incoming X-Request-Id header", async () => {
+    const requestId = "req-from-client-123";
+
+    const response = await request(app).get("/").set("X-Request-Id", requestId);
+
+    expect(response.status).toBe(200);
+    expect(response.headers["x-request-id"]).toBe(requestId);
+  });
+
   it("allows anonymous users to list paginated books", async () => {
     mockQuery
       .mockResolvedValueOnce({

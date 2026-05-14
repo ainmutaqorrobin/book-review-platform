@@ -4,12 +4,13 @@ import { AppError } from "../utils/appError";
 import { getBookById } from "../models/book";
 import { PersistedRole, Role } from "../models/type";
 import { NotFoundError } from "../utils/notfoundError";
+import { getJwtSecret } from "../config/env";
 
 function getAuthenticatedUser(req: Request) {
   const token = req.cookies.jwt;
   if (!token) return null;
 
-  const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+  const payload = jwt.verify(token, getJwtSecret()) as {
     userId: number;
     role: PersistedRole;
   };
