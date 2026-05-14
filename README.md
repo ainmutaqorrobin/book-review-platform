@@ -17,7 +17,7 @@ Book Review Platform is a full-stack app for browsing books, writing reviews, an
    ```
 
 2. Fill in the required secrets in `.env`, especially:
-   - `OPENAI_API_KEY`
+   - `OPENAI_API_KEY` or `ANTHROPIC_API_KEY`
    - `JWT_SECRET`
    - `JWT_EXPIRES_IN`
 
@@ -47,6 +47,13 @@ Book Review Platform is a full-stack app for browsing books, writing reviews, an
    - Username: `admin`
    - Password: `admin12345`
 
+7. Check backend environment status when needed:
+
+   ```bash
+   cd backend
+   npm run env:check
+   ```
+
 The local compose file now runs:
 
 - `frontend` from `./frontend` in development mode with hot reload
@@ -57,6 +64,7 @@ The local compose file now runs:
 
 The database schema is initialized from `backend/db/schema.sql` the first time the Postgres volume is created.
 Source code is bind-mounted into the frontend and backend containers, while `node_modules` stay inside Docker volumes so you can edit locally without reinstalling on every container start.
+The backend dev container now re-runs `npm ci` automatically when `backend/package-lock.json` changes, which prevents stale Docker `node_modules` volumes from missing newly added dependencies.
 
 ## Production Deployment Model
 
