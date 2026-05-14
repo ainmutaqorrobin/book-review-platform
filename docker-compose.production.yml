@@ -27,6 +27,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - default
+      - storage-net
     ports:
       - "127.0.0.1:${BACKEND_PORT:-4000}:4000"
     environment:
@@ -43,6 +46,13 @@ services:
       ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME}
       ADMIN_SEED_NAME: ${ADMIN_SEED_NAME}
       ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
       NODE_ENV: production
     healthcheck:
       test:
@@ -84,3 +94,7 @@ services:
 
 volumes:
   postgres-data:
+
+networks:
+  storage-net:
+    external: true
