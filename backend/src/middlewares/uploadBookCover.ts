@@ -23,10 +23,7 @@ const upload = multer({
   ) => {
     if (!ALLOWED_COVER_MIME_TYPES.has(file.mimetype)) {
       callback(
-        new AppError(
-          "Cover image must be a JPEG, PNG, or WebP file",
-          400,
-        ),
+        new AppError("Cover image must be a JPEG, PNG, or WebP file", 400),
       );
       return;
     }

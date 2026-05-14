@@ -17,12 +17,16 @@ const {
 } = vi.hoisted(() => {
   const mockQuery = vi.fn<(...args: any[]) => Promise<any>>();
   const enrichReviewText = vi.fn<(text: string) => Promise<any>>();
-  const uploadBookCover = vi.fn<
-    (params: { bookId: number; buffer: Buffer; mimeType: string }) => Promise<string>
-  >();
-  const deleteStoredCoverObject = vi.fn<
-    (key?: string | null) => Promise<void>
-  >();
+  const uploadBookCover =
+    vi.fn<
+      (params: {
+        bookId: number;
+        buffer: Buffer;
+        mimeType: string;
+      }) => Promise<string>
+    >();
+  const deleteStoredCoverObject =
+    vi.fn<(key?: string | null) => Promise<void>>();
 
   return {
     mockQuery,

@@ -17,14 +17,14 @@ View [API Documentation](https://documenter.getpostman.com/view/24966843/2sB3Wnx
 
 ## 📚 Books Routes
 
-| Method | Route                     | Description                                                                             |
-| ------ | ------------------------- | --------------------------------------------------------------------------------------- |
-| GET    | `/books`                  | Get list of all books                                                                   |
-| GET    | `/books/{bookId}`         | Get detailed information of a book                                                      |
+| Method | Route                     | Description                                                                                         |
+| ------ | ------------------------- | --------------------------------------------------------------------------------------------------- |
+| GET    | `/books`                  | Get list of all books                                                                               |
+| GET    | `/books/{bookId}`         | Get detailed information of a book                                                                  |
 | POST   | `/books`                  | Create a book with JSON or multipart form data; supports either `cover_image_url` or a `cover` file |
 | PUT    | `/books/{bookId}`         | Update a book with JSON or multipart form data; supports either `cover_image_url` or a `cover` file |
-| DELETE | `/books/{bookId}`         | Delete a book by its ID                                                                 |
-| POST   | `/books/{bookId}/reviews` | Create a review for the selected book (body requires `reviewer_name`, `text`, `rating`) |
+| DELETE | `/books/{bookId}`         | Delete a book by its ID                                                                             |
+| POST   | `/books/{bookId}/reviews` | Create a review for the selected book (body requires `reviewer_name`, `text`, `rating`)             |
 
 ---
 

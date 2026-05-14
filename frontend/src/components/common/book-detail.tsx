@@ -143,9 +143,8 @@ export default function BookDetail({ bookId }: BookDetailProps) {
     owner_user_id,
     created_at,
   } = book;
-  const shouldBypassOptimization = shouldBypassImageOptimization(
-    cover_image_url,
-  );
+  const shouldBypassOptimization =
+    shouldBypassImageOptimization(cover_image_url);
   const canManageBook =
     !authLoading &&
     (role === "admin" || (role === "user" && user?.id === owner_user_id));

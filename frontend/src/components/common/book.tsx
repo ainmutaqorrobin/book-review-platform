@@ -27,9 +27,8 @@ interface IProps {
 export default function Book({ book, onBookDeleteCallback }: IProps) {
   const { author, id, title, cover_image_url, created_at, description } = book;
   const { isLoading, role, user } = useAuth();
-  const shouldBypassOptimization = shouldBypassImageOptimization(
-    cover_image_url,
-  );
+  const shouldBypassOptimization =
+    shouldBypassImageOptimization(cover_image_url);
   const canManageBook =
     !isLoading &&
     (role === "admin" || (role === "user" && user?.id === book.owner_user_id));

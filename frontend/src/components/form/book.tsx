@@ -179,7 +179,9 @@ export default function BookForm({ mode = "create", bookId }: BookFormProps) {
         return;
       }
 
-      const coverSource = getCoverSourceOption(response.data.cover_image_source);
+      const coverSource = getCoverSourceOption(
+        response.data.cover_image_source,
+      );
 
       setOwnerUserId(response.data.owner_user_id ?? null);
       setExistingCoverSource(response.data.cover_image_source);
@@ -524,7 +526,9 @@ export default function BookForm({ mode = "create", bookId }: BookFormProps) {
                             </div>
 
                             <span className="inline-flex h-11 items-center justify-center rounded-full border border-stone-300 bg-white px-5 text-sm font-medium text-stone-800 shadow-[0_8px_20px_rgba(64,38,24,0.08)] transition-colors hover:border-stone-500">
-                              {selectedCoverFile ? "Choose Another File" : "Choose File"}
+                              {selectedCoverFile
+                                ? "Choose Another File"
+                                : "Choose File"}
                             </span>
                           </div>
                         </label>
