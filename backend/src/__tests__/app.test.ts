@@ -291,6 +291,9 @@ describe("Auth and RBAC", () => {
         rows: [{ id: 8, title: "Mine", owner_user_id: 22 }],
       })
       .mockResolvedValueOnce({
+        rows: [{ id: 8, title: "Mine", owner_user_id: 22 }],
+      })
+      .mockResolvedValueOnce({
         rows: [{ id: 8, title: "Updated", owner_user_id: 22 }],
       });
 

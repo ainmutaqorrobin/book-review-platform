@@ -24,6 +24,7 @@ import {
 } from "../middlewares/auth";
 import { Role } from "../models/type";
 import { reviewCreateRateLimiter } from "../middlewares/rateLimiter";
+import { uploadBookCover } from "../middlewares/uploadBookCover";
 
 const router = Router();
 
@@ -35,6 +36,7 @@ router.post(
   "/",
   requireAuth,
   authorizeRoles(Role.USER, Role.ADMIN),
+  uploadBookCover,
   createSingleBookValidation,
   handleValidation,
   createSingleBook,
@@ -52,9 +54,10 @@ router.post(
 router.put(
   "/:bookId",
   requireAuth,
+  authorizeBookOwnerOrAdmin,
+  uploadBookCover,
   updateSingleBookValidation,
   handleValidation,
-  authorizeBookOwnerOrAdmin,
   updateSingleBook,
 );
 

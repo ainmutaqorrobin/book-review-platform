@@ -1,6 +1,37 @@
 import { body, param, query } from "express-validator";
 import { createPaginationValidation } from "./pagination";
 
+function validateCoverUrl(value: unknown) {
+  if (value === undefined || value === null || value === "") {
+    return true;
+  }
+
+  if (typeof value !== "string") {
+    throw new Error("Cover image URL must be a string");
+  }
+
+  const parsedUrl = new URL(value);
+
+  if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+    throw new Error("Cover image URL must use http or https");
+  }
+
+  return true;
+}
+
+const validateSingleCoverSource = body().custom((_, { req }) => {
+  const hasFile = Boolean(req.file);
+  const hasCoverUrl =
+    typeof req.body.cover_image_url === "string" &&
+    req.body.cover_image_url.trim().length > 0;
+
+  if (hasFile && hasCoverUrl) {
+    throw new Error("Provide either a cover image URL or a cover file");
+  }
+
+  return true;
+});
+
 export const getBooksValidation = [
   ...createPaginationValidation(24),
   query("query")
@@ -29,6 +60,12 @@ export const createSingleBookValidation = [
     .trim()
     .notEmpty()
     .withMessage("Author is required and cannot be empty"),
+  body("description")
+    .optional()
+    .isString()
+    .withMessage("Description must be a string"),
+  body("cover_image_url").custom(validateCoverUrl),
+  validateSingleCoverSource,
 ];
 
 export const createBookReviewValidation = [
@@ -59,8 +96,12 @@ export const updateSingleBookValidation = [
     .trim()
     .notEmpty()
     .withMessage("Author cannot be empty"),
-  body("description").optional().isString(),
-  body("cover_image_url").optional().isString(),
+  body("description")
+    .optional()
+    .isString()
+    .withMessage("Description must be a string"),
+  body("cover_image_url").custom(validateCoverUrl),
+  validateSingleCoverSource,
 ];
 
 export const deleteSingleBookValidation = [

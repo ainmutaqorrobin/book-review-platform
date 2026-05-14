@@ -9,8 +9,8 @@ export type PersistedRole = Role.USER | Role.ADMIN;
 export interface Book {
   title: string;
   author: string;
-  description?: string;
-  cover_image_url?: string;
+  description?: string | null;
+  cover_image_url?: string | null;
   owner_user_id?: number | null;
 }
 

@@ -83,21 +83,35 @@ export const createBook = async (data: Book) => {
 };
 
 export const updateBook = async (id: number, data: Partial<Book>) => {
+  const updates: string[] = [];
+  const values: Array<number | string | null> = [];
+
+  const pushUpdate = (column: keyof Book, value: Book[keyof Book]) => {
+    if (value === undefined) {
+      return;
+    }
+
+    values.push(value ?? null);
+    updates.push(`${column} = $${values.length}`);
+  };
+
+  pushUpdate("title", data.title);
+  pushUpdate("author", data.author);
+  pushUpdate("description", data.description);
+  pushUpdate("cover_image_url", data.cover_image_url);
+
+  if (updates.length === 0) {
+    return getBookById(id);
+  }
+
+  values.push(id);
+
   const result = await pool.query(
     `UPDATE books
-     SET title = COALESCE($1, title),
-         author = COALESCE($2, author),
-         description = COALESCE($3, description),
-         cover_image_url = COALESCE($4, cover_image_url)
-     WHERE id = $5
+     SET ${updates.join(", ")}
+     WHERE id = $${values.length}
      RETURNING *`,
-    [
-      data.title ?? null,
-      data.author ?? null,
-      data.description ?? null,
-      data.cover_image_url ?? null,
-      id,
-    ],
+    values,
   );
 
   return result.rows[0];

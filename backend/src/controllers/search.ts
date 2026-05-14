@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { searchBooksAndReviews } from "../models/search";
 import { sendResponse } from "../utils/responseHelper";
 import { AppError } from "../utils/appError";
+import { serializeBookCollection } from "../storage/bookCovers";
 
 export const searchHandler = async (
   req: Request,
@@ -19,12 +20,16 @@ export const searchHandler = async (
     }
 
     const result = await searchBooksAndReviews(query);
+    const serializedResult = {
+      ...result,
+      books: serializeBookCollection(result.books),
+    };
 
     return sendResponse(
       res,
       200,
       "Search results fetched successfully",
-      result,
+      serializedResult,
     );
   } catch (err) {
     next(err);
