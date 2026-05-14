@@ -11,8 +11,25 @@ import jwt, { type SignOptions } from "jsonwebtoken";
 import { compare } from "bcrypt";
 import { sendResponse } from "../utils/responseHelper";
 
-const secretKey = process.env.JWT_SECRET!;
-const jwtExpiresIn = process.env.JWT_EXPIRES_IN!;
+function getSecretKey() {
+  const secretKey = process.env.JWT_SECRET?.trim();
+
+  if (!secretKey) {
+    throw new Error("JWT_SECRET is required");
+  }
+
+  return secretKey;
+}
+
+function getJwtExpiresIn() {
+  const jwtExpiresIn = process.env.JWT_EXPIRES_IN?.trim();
+
+  if (!jwtExpiresIn) {
+    throw new Error("JWT_EXPIRES_IN is required");
+  }
+
+  return jwtExpiresIn;
+}
 
 function parseDurationToMilliseconds(value: string) {
   const trimmedValue = value.trim();
@@ -77,9 +94,6 @@ function getJwtExpiryConfig(value: string) {
   };
 }
 
-const { cookieMaxAgeMs, jwtExpiresIn: jwtExpiresInOption } =
-  getJwtExpiryConfig(jwtExpiresIn);
-
 export const signup = async (
   req: Request,
   res: Response,
@@ -113,7 +127,9 @@ export const login = async (
     if (!isValid) throw new AppError("Invalid credentials", 401);
 
     const loggedUser = { userId: user.id, role: user.role };
-    const token = jwt.sign(loggedUser, secretKey, {
+    const { cookieMaxAgeMs, jwtExpiresIn: jwtExpiresInOption } =
+      getJwtExpiryConfig(getJwtExpiresIn());
+    const token = jwt.sign(loggedUser, getSecretKey(), {
       expiresIn: jwtExpiresInOption,
     });
 
