@@ -15,6 +15,7 @@ import {
 import { deleteBook, Book as Model } from "@/utils/api/books";
 import { FALLBACK_IMAGE } from "@/utils/const/image";
 import { formatDate } from "@/lib/format";
+import { shouldBypassImageOptimization } from "@/lib/image";
 import ConfirmationDialog from "./confirmation-dialog";
 import { useAuth } from "../providers/auth-provider";
 
@@ -26,6 +27,9 @@ interface IProps {
 export default function Book({ book, onBookDeleteCallback }: IProps) {
   const { author, id, title, cover_image_url, created_at, description } = book;
   const { isLoading, role, user } = useAuth();
+  const shouldBypassOptimization = shouldBypassImageOptimization(
+    cover_image_url,
+  );
   const canManageBook =
     !isLoading &&
     (role === "admin" || (role === "user" && user?.id === book.owner_user_id));
@@ -51,6 +55,7 @@ export default function Book({ book, onBookDeleteCallback }: IProps) {
           fill
           className="object-cover"
           sizes="(max-width: 768px) 100vw, 33vw"
+          unoptimized={shouldBypassOptimization}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#201814]/82 via-[#201814]/18 to-transparent" />
 

@@ -17,6 +17,7 @@ import {
 import { PaginationMeta } from "@/lib/fetcher";
 import { FALLBACK_IMAGE } from "@/utils/const/image";
 import { formatDate } from "@/lib/format";
+import { shouldBypassImageOptimization } from "@/lib/image";
 import ConfirmationDialog from "./confirmation-dialog";
 import BackButton from "./back-button";
 import Review from "./review";
@@ -142,6 +143,9 @@ export default function BookDetail({ bookId }: BookDetailProps) {
     owner_user_id,
     created_at,
   } = book;
+  const shouldBypassOptimization = shouldBypassImageOptimization(
+    cover_image_url,
+  );
   const canManageBook =
     !authLoading &&
     (role === "admin" || (role === "user" && user?.id === owner_user_id));
@@ -246,6 +250,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
               fill
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 40vw"
+              unoptimized={shouldBypassOptimization}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#201814] via-[#201814]/10 to-transparent" />
           </div>

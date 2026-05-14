@@ -29,16 +29,20 @@ export async function fetcher<T>(
   fallbackData?: T,
 ): Promise<ApiResponse<T>> {
   const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+  const isFormDataRequest =
+    typeof FormData !== "undefined" && options.data instanceof FormData;
 
   try {
     const response = await axios({
       url: `${baseURL}${path}`,
       method: options.method || "GET",
       withCredentials: true,
-      headers: {
-        "Content-Type": "application/json",
-        ...(options.headers || {}),
-      },
+      headers: isFormDataRequest
+        ? options.headers
+        : {
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+          },
       data: options.data || undefined,
       params: options.params || undefined,
     });

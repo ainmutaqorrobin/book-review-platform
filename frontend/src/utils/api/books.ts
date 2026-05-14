@@ -1,11 +1,15 @@
 import { ApiResponse, fetcher, PaginatedData } from "@/lib/fetcher";
 
+export type CoverImageSource = "upload" | "external" | null;
+
 export interface Book {
   id: number;
   title: string;
   author: string;
   description?: string;
-  cover_image_url?: string;
+  cover_image_url?: string | null;
+  cover_image_storage_value?: string | null;
+  cover_image_source?: CoverImageSource;
   owner_user_id?: number | null;
   created_at?: string;
 }
@@ -15,10 +19,21 @@ export interface BookDetail {
   title: string;
   author: string;
   description: string;
-  cover_image_url: string;
+  cover_image_url: string | null;
+  cover_image_storage_value: string | null;
+  cover_image_source: CoverImageSource;
   owner_user_id: number | null;
   created_at: string;
 }
+
+export interface BookMutationData {
+  title: string;
+  author: string;
+  description?: string;
+  cover_image_url?: string | null;
+}
+
+export type BookMutationPayload = BookMutationData | FormData;
 
 export interface Review {
   id: number;
@@ -72,7 +87,7 @@ export async function getBookById(id: number): Promise<BookDetailResponse> {
 }
 
 // Create book
-export async function createBook(book: Omit<Book, "id">) {
+export async function createBook(book: BookMutationPayload) {
   return fetcher<Book>("/books", {
     method: "POST",
     data: book,
@@ -80,7 +95,7 @@ export async function createBook(book: Omit<Book, "id">) {
 }
 
 // Update book
-export async function updateBook(id: number, book: Partial<Book>) {
+export async function updateBook(id: number, book: BookMutationPayload) {
   return fetcher<Book>(`/books/${id}`, {
     method: "PUT",
     data: book,
