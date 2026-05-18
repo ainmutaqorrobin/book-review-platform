@@ -6,10 +6,9 @@ export function shouldBypassImageOptimization(src?: string | null) {
   try {
     const url = new URL(src);
 
-    return (
-      (url.hostname === "localhost" || url.hostname === "127.0.0.1") &&
-      url.port === "9000"
-    );
+    // User-provided cover URLs should be fetched by the browser directly
+    // instead of proxying arbitrary hosts through the Next.js image server.
+    return url.protocol === "http:" || url.protocol === "https:";
   } catch {
     return false;
   }

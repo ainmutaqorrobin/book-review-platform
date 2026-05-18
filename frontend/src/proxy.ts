@@ -7,7 +7,7 @@ function isProtectedRoute(pathname: string) {
   return pathname === "/create-book" || /^\/books\/[^/]+\/edit$/.test(pathname);
 }
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const url = req.nextUrl.clone();
   const { pathname } = url;
   const token = req.cookies.get("jwt")?.value;
