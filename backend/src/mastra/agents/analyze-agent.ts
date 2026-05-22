@@ -7,55 +7,58 @@ export const analyzeAgents = new Agent({
   instructions: "You are now an expert analyzer",
 });
 
+type ReviewEnrichmentResult = {
+  summary: string;
+  sentimentScore: number;
+  tags: string[];
+};
+
+function stripMarkdownCodeFence(value: string) {
+  if (!value.startsWith("```")) {
+    return value;
+  }
+
+  return value.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?```\s*$/, "");
+}
+
 export async function enrichReviewText(text: string) {
   try {
-    // Generate summary
-    const summaryPrompt = `Review Text:\n${text}\n\nProvide a short (2-3 sentence) summary of this review.`;
-
-    const summaryResponse = await analyzeAgents.generate(summaryPrompt);
-    const summary = summaryResponse.text.trim();
-
-    // Generate sentiment + tags
-    const secondPrompt = `Review Text:\n${text}\n\nAnswer with ONLY a JSON object (no markdown, no code blocks) including:
-- sentimentLabel: "positive", "neutral", or "negative"
+    const prompt = `Review Text:\n${text}\n\nAnswer with ONLY a JSON object (no markdown, no code blocks) containing:
+- summary: a short 2-3 sentence summary of the review
 - sentimentScore: a number between 0.0 and 1.0
-- tags: an array of 1-5 keyword strings
+- tags: an array of 1-5 concise keyword strings
 
 JSON Response:`;
 
-    const sentimentRes = await analyzeAgents.generate(secondPrompt);
+    const response = await analyzeAgents.generate(prompt);
+    const parsed = JSON.parse(
+      stripMarkdownCodeFence(response.text.trim()),
+    ) as Partial<ReviewEnrichmentResult>;
 
-    let sentimentLabel = "neutral";
-    let sentimentScore = 0.5;
-    let tags: string[] = [];
-
-    try {
-      // Strip markdown code blocks if present
-      let jsonText = sentimentRes.text.trim();
-
-      // Remove ```json and ``` if present
-      if (jsonText.startsWith("```")) {
-        jsonText = jsonText
-          .replace(/^```(?:json)?\s*\n?/, "")
-          .replace(/\n?```\s*$/, "");
-      }
-
-      const parsed = JSON.parse(jsonText);
-      sentimentLabel = parsed.sentimentLabel;
-      sentimentScore = parsed.sentimentScore;
-      tags = parsed.tags;
-    } catch (e) {
-      logger.warn(
-        {
-          err: e,
-          sentimentResponse: sentimentRes.text,
-        },
-        "Failed to parse AI output for sentiment/tags",
-      );
+    if (
+      typeof parsed.summary !== "string" ||
+      parsed.summary.trim().length === 0
+    ) {
+      throw new Error("AI enrichment returned an invalid summary");
     }
 
-    const result = { summary, sentimentLabel, sentimentScore, tags };
-    return result;
+    if (typeof parsed.sentimentScore !== "number") {
+      throw new Error("AI enrichment returned an invalid sentiment score");
+    }
+
+    if (!Array.isArray(parsed.tags)) {
+      throw new Error("AI enrichment returned invalid tags");
+    }
+
+    return {
+      summary: parsed.summary.trim(),
+      sentimentScore: Math.min(1, Math.max(0, parsed.sentimentScore)),
+      tags: parsed.tags
+        .filter((tag): tag is string => typeof tag === "string")
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+        .slice(0, 5),
+    };
   } catch (error) {
     logger.error({ err: error }, "Failed to enrich review text");
     throw error;

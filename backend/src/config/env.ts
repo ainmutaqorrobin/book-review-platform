@@ -77,6 +77,12 @@ const ENV_DEFINITIONS: EnvDefinition[] = [
     description: "JWT expiration duration",
   },
   {
+    name: "REDIS_URL",
+    requirement: "required",
+    description: "Redis connection string for background job processing",
+    sensitive: true,
+  },
+  {
     name: "CORS_ALLOWED_ORIGINS",
     requirement: "optional",
     description: "Comma-separated allowed CORS origins",
@@ -99,6 +105,12 @@ const ENV_DEFINITIONS: EnvDefinition[] = [
     requirement: "optional",
     description: "Review submit rate-limit max requests",
     defaultValue: "300",
+  },
+  {
+    name: "AI_ENRICHMENT_CONCURRENCY",
+    requirement: "optional",
+    description: "Concurrent AI review enrichment jobs processed by the worker",
+    defaultValue: "2",
   },
   {
     name: "LOG_LEVEL",
@@ -338,6 +350,10 @@ export function getReviewRateLimitMax() {
   return parseNumberEnv("REVIEW_RATE_LIMIT_MAX", 300);
 }
 
+export function getAiEnrichmentConcurrency() {
+  return parseNumberEnv("AI_ENRICHMENT_CONCURRENCY", 2);
+}
+
 export function getLogLevel() {
   return getTrimmedValue("LOG_LEVEL") ?? "info";
 }
@@ -356,6 +372,10 @@ export function getJwtExpiresIn() {
 
 export function getDatabaseUrl() {
   return requireEnv("DATABASE_URL");
+}
+
+export function getRedisUrl() {
+  return requireEnv("REDIS_URL");
 }
 
 export function getStorageEnv(name: string) {

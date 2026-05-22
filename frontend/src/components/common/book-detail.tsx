@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -29,6 +29,8 @@ interface BookDetailProps {
 }
 
 const REVIEWS_PER_PAGE = 5;
+const REVIEW_ENRICHMENT_POLL_INTERVAL_MS = 5_000;
+const REVIEW_ENRICHMENT_POLL_TIMEOUT_MS = 60_000;
 const DEFAULT_REVIEW_PAGINATION: PaginationMeta = {
   page: 1,
   limit: REVIEWS_PER_PAGE,
@@ -51,6 +53,63 @@ export default function BookDetail({ bookId }: BookDetailProps) {
   const [loading, setLoading] = useState(true);
   const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
 
+  const applyReviewPage = useCallback(
+    (
+      items: ReviewModel[],
+      pagination: PaginationMeta,
+      preserveLoadedPages = false,
+    ) => {
+      startTransition(() => {
+        setReviews((currentReviews) => {
+          if (!preserveLoadedPages) {
+            return items;
+          }
+
+          return [...items, ...currentReviews.slice(REVIEWS_PER_PAGE)];
+        });
+
+        setReviewPagination((currentPagination) => {
+          if (!preserveLoadedPages) {
+            return pagination;
+          }
+
+          const activePage = Math.min(
+            currentPagination.page,
+            pagination.totalPages || 1,
+          );
+
+          return {
+            ...pagination,
+            page: activePage,
+            hasPreviousPage: activePage > 1,
+            hasNextPage: activePage < pagination.totalPages,
+          };
+        });
+      });
+    },
+    [],
+  );
+
+  const refreshFirstReviewPage = useCallback(async () => {
+    const response = await getReviews(bookId, {
+      page: 1,
+      limit: REVIEWS_PER_PAGE,
+    });
+
+    if (!response.success || !response.data) {
+      throw new Error(response.message || "Failed to refresh reviews.");
+    }
+
+    applyReviewPage(
+      response.data.items ?? [],
+      response.data.pagination ?? DEFAULT_REVIEW_PAGINATION,
+      true,
+    );
+    setReviewsError(null);
+
+    return response.data.items ?? [];
+  }, [applyReviewPage, bookId]);
+
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -67,8 +126,8 @@ export default function BookDetail({ bookId }: BookDetailProps) {
       }
 
       if (reviewsResponse.success && reviewsResponse.data) {
-        setReviews(reviewsResponse.data.items ?? []);
-        setReviewPagination(
+        applyReviewPage(
+          reviewsResponse.data.items ?? [],
           reviewsResponse.data.pagination ?? DEFAULT_REVIEW_PAGINATION,
         );
         setReviewsError(null);
@@ -82,7 +141,7 @@ export default function BookDetail({ bookId }: BookDetailProps) {
     } finally {
       setLoading(false);
     }
-  }, [bookId]);
+  }, [applyReviewPage, bookId]);
 
   useEffect(() => {
     void fetchData();
@@ -115,6 +174,66 @@ export default function BookDetail({ bookId }: BookDetailProps) {
       window.removeEventListener("pageshow", refreshIfNeeded);
     };
   }, [bookId, fetchData]);
+
+  useEffect(() => {
+    const shouldPoll =
+      !loading &&
+      !reviewsError &&
+      reviews
+        .slice(0, REVIEWS_PER_PAGE)
+        .some(
+          (review) =>
+            review.ai_enrichment_status === "pending" ||
+            review.ai_enrichment_status === "processing",
+        );
+
+    if (!shouldPoll) {
+      return;
+    }
+
+    let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+    const deadline = Date.now() + REVIEW_ENRICHMENT_POLL_TIMEOUT_MS;
+
+    const poll = async () => {
+      if (cancelled || Date.now() >= deadline) {
+        return;
+      }
+
+      try {
+        const firstPageReviews = await refreshFirstReviewPage();
+        const hasPendingReview = firstPageReviews.some(
+          (review) =>
+            review.ai_enrichment_status === "pending" ||
+            review.ai_enrichment_status === "processing",
+        );
+
+        if (!cancelled && hasPendingReview && Date.now() < deadline) {
+          timeoutId = setTimeout(() => {
+            void poll();
+          }, REVIEW_ENRICHMENT_POLL_INTERVAL_MS);
+        }
+      } catch {
+        if (!cancelled && Date.now() < deadline) {
+          timeoutId = setTimeout(() => {
+            void poll();
+          }, REVIEW_ENRICHMENT_POLL_INTERVAL_MS);
+        }
+      }
+    };
+
+    timeoutId = setTimeout(() => {
+      void poll();
+    }, REVIEW_ENRICHMENT_POLL_INTERVAL_MS);
+
+    return () => {
+      cancelled = true;
+
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [loading, refreshFirstReviewPage, reviews, reviewsError]);
 
   if (loading) {
     return (

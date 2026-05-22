@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 process.env.JWT_SECRET = "test-secret";
 process.env.JWT_EXPIRES_IN = "3600000";
 process.env.NODE_ENV = "test";
+process.env.REDIS_URL = "redis://127.0.0.1:6379";
 process.env.S3_PUBLIC_ENDPOINT = "https://s3.example.test";
 process.env.S3_BUCKET = "book-review";
 

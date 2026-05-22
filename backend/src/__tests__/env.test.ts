@@ -10,6 +10,7 @@ describe("environment configuration", () => {
       DATABASE_URL: "postgresql://db",
       JWT_SECRET: "secret",
       JWT_EXPIRES_IN: "3600000",
+      REDIS_URL: "redis://127.0.0.1:6379",
       OPENAI_API_KEY: "sk-test",
     } as NodeJS.ProcessEnv);
 
@@ -26,6 +27,7 @@ describe("environment configuration", () => {
       DATABASE_URL: "postgresql://db",
       JWT_SECRET: "secret",
       JWT_EXPIRES_IN: "3600000",
+      REDIS_URL: "redis://127.0.0.1:6379",
       OPENAI_API_KEY: "sk-test",
     } as NodeJS.ProcessEnv);
 

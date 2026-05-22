@@ -12,7 +12,18 @@ export const searchBooksAndReviews = async (query: string) => {
   );
 
   const reviews = await pool.query(
-    `SELECT r.id, r.book_id, r.reviewer_name, r.text, r.rating, r.created_at, b.title AS book_title
+    `SELECT
+       r.id,
+       r.book_id,
+       r.reviewer_name,
+       r.text,
+       r.rating,
+       r.summary,
+       r.sentiment_score,
+       r.tags,
+       r.created_at,
+       r.ai_enrichment_status,
+       b.title AS book_title
      FROM reviews r
      JOIN books b ON b.id = r.book_id
      WHERE r.text ILIKE $1 OR r.reviewer_name ILIKE $1

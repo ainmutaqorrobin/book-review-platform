@@ -6,20 +6,25 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 process.env.JWT_SECRET = "test-secret";
 process.env.JWT_EXPIRES_IN = "3600000";
 process.env.NODE_ENV = "test";
+process.env.REDIS_URL = "redis://127.0.0.1:6379";
 
-const { enrichReviewText, mockPool, mockQuery } = vi.hoisted(() => {
-  const mockQuery = vi.fn<(...args: any[]) => Promise<any>>();
-  const enrichReviewText = vi.fn<(text: string) => Promise<any>>();
+const { enqueueReviewEnrichment, enrichReviewText, mockPool, mockQuery } =
+  vi.hoisted(() => {
+    const mockQuery = vi.fn<(...args: any[]) => Promise<any>>();
+    const enrichReviewText = vi.fn<(text: string) => Promise<any>>();
+    const enqueueReviewEnrichment =
+      vi.fn<(reviewId: number) => Promise<void>>();
 
-  return {
-    mockQuery,
-    mockPool: {
-      query: mockQuery,
-      on: vi.fn(),
-    },
-    enrichReviewText,
-  };
-});
+    return {
+      enqueueReviewEnrichment,
+      mockQuery,
+      mockPool: {
+        query: mockQuery,
+        on: vi.fn(),
+      },
+      enrichReviewText,
+    };
+  });
 
 vi.mock("../config/db", () => ({
   default: mockPool,
@@ -28,6 +33,10 @@ vi.mock("../config/db", () => ({
 vi.mock("../mastra/agents/analyze-agent", () => ({
   analyzeAgents: {},
   enrichReviewText,
+}));
+
+vi.mock("../queues/reviewEnrichment", () => ({
+  enqueueReviewEnrichment,
 }));
 
 vi.mock("@mastra/core", () => ({
@@ -45,7 +54,9 @@ function createAuthCookie(userId: number, role: "user" | "admin") {
 
 beforeEach(() => {
   mockQuery.mockReset();
+  enqueueReviewEnrichment.mockReset();
   enrichReviewText.mockReset();
+  enqueueReviewEnrichment.mockResolvedValue(undefined);
   enrichReviewText.mockResolvedValue({
     sentimentScore: 0.91,
     summary: "Helpful review",
@@ -189,9 +200,10 @@ describe("Auth and RBAC", () => {
             reviewer_name: "Guest Reviewer",
             text: "Great book",
             rating: 5,
-            summary: "Helpful review",
-            sentiment_score: 0.91,
-            tags: ["helpful"],
+            summary: null,
+            sentiment_score: null,
+            tags: null,
+            ai_enrichment_status: "pending",
           },
         ],
       });
@@ -204,7 +216,87 @@ describe("Auth and RBAC", () => {
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    expect(enrichReviewText).toHaveBeenCalledWith("Great book");
+    expect(response.body.data.ai_enrichment_status).toBe("pending");
+    expect(enqueueReviewEnrichment).toHaveBeenCalledWith(10);
+    expect(enrichReviewText).not.toHaveBeenCalled();
+  });
+
+  it("enqueues review enrichment for the nested book review route", async () => {
+    mockQuery
+      .mockResolvedValueOnce({ rowCount: 1, rows: [{ id: 2 }] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 11,
+            book_id: 2,
+            reviewer_name: "Reader Two",
+            text: "Worth rereading",
+            rating: 4,
+            summary: null,
+            sentiment_score: null,
+            tags: null,
+            ai_enrichment_status: "pending",
+          },
+        ],
+      });
+
+    const response = await request(app).post("/books/2/reviews").send({
+      reviewer_name: "Reader Two",
+      text: "Worth rereading",
+      rating: 4,
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body.data.ai_enrichment_status).toBe("pending");
+    expect(enqueueReviewEnrichment).toHaveBeenCalledWith(11);
+    expect(enrichReviewText).not.toHaveBeenCalled();
+  });
+
+  it("keeps the review when queue enqueueing fails", async () => {
+    enqueueReviewEnrichment.mockRejectedValueOnce(new Error("Redis down"));
+    mockQuery
+      .mockResolvedValueOnce({ rowCount: 1, rows: [{ id: 2 }] })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 12,
+            book_id: 2,
+            reviewer_name: "Fallback Reviewer",
+            text: "Still save this",
+            rating: 3,
+            summary: null,
+            sentiment_score: null,
+            tags: null,
+            ai_enrichment_status: "pending",
+          },
+        ],
+      })
+      .mockResolvedValueOnce({
+        rows: [
+          {
+            id: 12,
+            book_id: 2,
+            reviewer_name: "Fallback Reviewer",
+            text: "Still save this",
+            rating: 3,
+            summary: null,
+            sentiment_score: null,
+            tags: null,
+            ai_enrichment_status: "failed",
+          },
+        ],
+      });
+
+    const response = await request(app).post("/reviews/2").send({
+      reviewer_name: "Fallback Reviewer",
+      text: "Still save this",
+      rating: 3,
+    });
+
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.data.ai_enrichment_status).toBe("failed");
+    expect(enrichReviewText).not.toHaveBeenCalled();
   });
 
   it("returns paginated reviews for a book", async () => {

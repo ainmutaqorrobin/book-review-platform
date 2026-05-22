@@ -25,6 +25,25 @@ services:
       retries: 5
       start_period: 10s
 
+  redis:
+    container_name: book-review-platform-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   backend:
     container_name: book-review-platform-backend
     image: ${DOCKER_USERNAME}/book-review-backend:${IMAGE_TAG:-latest}
@@ -49,10 +68,12 @@ services:
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      REDIS_URL: ${REDIS_URL}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-https://book-review.mutaqorrobin.online}
       GLOBAL_RATE_LIMIT_MAX: ${GLOBAL_RATE_LIMIT_MAX:-100}
       REVIEW_RATE_LIMIT_WINDOW_MS: ${REVIEW_RATE_LIMIT_WINDOW_MS:-900000}
       REVIEW_RATE_LIMIT_MAX: ${REVIEW_RATE_LIMIT_MAX:-300}
+      AI_ENRICHMENT_CONCURRENCY: ${AI_ENRICHMENT_CONCURRENCY:-2}
       ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME}
       ADMIN_SEED_NAME: ${ADMIN_SEED_NAME}
       ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD}
@@ -76,6 +97,49 @@ services:
       timeout: 5s
       retries: 5
       start_period: 20s
+
+  backend-worker:
+    container_name: book-review-platform-backend-worker
+    image: ${DOCKER_USERNAME}/book-review-backend:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - default
+      - storage-net
+    environment:
+      PORT: 4000
+      DATABASE_URL: ${DATABASE_URL:-postgresql://${POSTGRES_USER:-bookreview}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-bookreview}}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      REDIS_URL: ${REDIS_URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-https://book-review.mutaqorrobin.online}
+      GLOBAL_RATE_LIMIT_MAX: ${GLOBAL_RATE_LIMIT_MAX:-100}
+      REVIEW_RATE_LIMIT_WINDOW_MS: ${REVIEW_RATE_LIMIT_WINDOW_MS:-900000}
+      REVIEW_RATE_LIMIT_MAX: ${REVIEW_RATE_LIMIT_MAX:-300}
+      AI_ENRICHMENT_CONCURRENCY: ${AI_ENRICHMENT_CONCURRENCY:-2}
+      ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME}
+      ADMIN_SEED_NAME: ${ADMIN_SEED_NAME}
+      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD}
+      S3_ENDPOINT: ${S3_ENDPOINT}
+      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT}
+      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
+      S3_SECRET_KEY: ${S3_SECRET_KEY}
+      S3_BUCKET: ${S3_BUCKET}
+      S3_REGION: ${S3_REGION:-us-east-1}
+      S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
+      NODE_ENV: production
+    command: ["npm", "run", "worker"]
 
   frontend:
     container_name: book-review-platform-frontend
@@ -109,6 +173,7 @@ services:
 
 volumes:
   postgres-data:
+  redis-data:
 
 networks:
   storage-net:
