@@ -1,6 +1,5 @@
 services:
   db:
-    container_name: book-review-platform-db
     image: postgres:16-alpine
     restart: unless-stopped
     logging:
@@ -26,7 +25,6 @@ services:
       start_period: 10s
 
   redis:
-    container_name: book-review-platform-redis
     image: redis:7-alpine
     restart: unless-stopped
     logging:
@@ -45,7 +43,6 @@ services:
       start_period: 10s
 
   backend:
-    container_name: book-review-platform-backend
     image: ${DOCKER_USERNAME}/book-review-backend:${IMAGE_TAG:-latest}
     restart: unless-stopped
     logging:
@@ -74,6 +71,7 @@ services:
       REVIEW_RATE_LIMIT_WINDOW_MS: ${REVIEW_RATE_LIMIT_WINDOW_MS:-900000}
       REVIEW_RATE_LIMIT_MAX: ${REVIEW_RATE_LIMIT_MAX:-300}
       AI_ENRICHMENT_CONCURRENCY: ${AI_ENRICHMENT_CONCURRENCY:-2}
+      AI_ENRICHMENT_SIMULATED_DELAY_MS: ${AI_ENRICHMENT_SIMULATED_DELAY_MS:-0}
       ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME}
       ADMIN_SEED_NAME: ${ADMIN_SEED_NAME}
       ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD}
@@ -99,7 +97,6 @@ services:
       start_period: 20s
 
   backend-worker:
-    container_name: book-review-platform-backend-worker
     image: ${DOCKER_USERNAME}/book-review-backend:${IMAGE_TAG:-latest}
     restart: unless-stopped
     logging:
@@ -128,6 +125,7 @@ services:
       REVIEW_RATE_LIMIT_WINDOW_MS: ${REVIEW_RATE_LIMIT_WINDOW_MS:-900000}
       REVIEW_RATE_LIMIT_MAX: ${REVIEW_RATE_LIMIT_MAX:-300}
       AI_ENRICHMENT_CONCURRENCY: ${AI_ENRICHMENT_CONCURRENCY:-2}
+      AI_ENRICHMENT_SIMULATED_DELAY_MS: ${AI_ENRICHMENT_SIMULATED_DELAY_MS:-0}
       ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME}
       ADMIN_SEED_NAME: ${ADMIN_SEED_NAME}
       ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD}
@@ -142,7 +140,6 @@ services:
     command: ["npm", "run", "worker"]
 
   frontend:
-    container_name: book-review-platform-frontend
     image: ${DOCKER_USERNAME}/book-review-frontend:${IMAGE_TAG:-latest}
     restart: unless-stopped
     logging:

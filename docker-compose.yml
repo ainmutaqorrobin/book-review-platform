@@ -36,6 +36,8 @@ services:
         max-size: "10m"
         max-file: "3"
     command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis-data:/data
     healthcheck:
@@ -110,63 +112,64 @@ services:
           --policy file:///tmp/public-read-policy.json
     restart: "no"
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-    depends_on:
-      db:
-        condition: service_healthy
-      rustfs-bucket-init:
-        condition: service_completed_successfully
-    ports:
-      - "${BACKEND_PORT:-4000}:4000"
-    environment:
-      PORT: 4000
-      DATABASE_URL: postgresql://${POSTGRES_USER:-bookreview}:${POSTGRES_PASSWORD:-bookreviewpassword}@db:5432/${POSTGRES_DB:-bookreview}
-      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
-      GLOBAL_RATE_LIMIT_MAX: ${GLOBAL_RATE_LIMIT_MAX:-100}
-      REVIEW_RATE_LIMIT_WINDOW_MS: ${REVIEW_RATE_LIMIT_WINDOW_MS:-900000}
-      REVIEW_RATE_LIMIT_MAX: ${REVIEW_RATE_LIMIT_MAX:-300}
-      AI_ENRICHMENT_CONCURRENCY: ${AI_ENRICHMENT_CONCURRENCY:-2}
-      ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME:-admin}
-      ADMIN_SEED_NAME: ${ADMIN_SEED_NAME:-Platform Admin}
-      ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin12345}
-      S3_ENDPOINT: ${S3_ENDPOINT:-http://rustfs:9000}
-      S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY:-rustfsadmin}
-      S3_SECRET_KEY: ${S3_SECRET_KEY:-rustfsadmin}
-      S3_BUCKET: ${S3_BUCKET:-book-review}
-      S3_REGION: ${S3_REGION:-us-east-1}
-      S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
-      NODE_ENV: development
-      LOG_PRETTY: ${LOG_PRETTY}
-    volumes:
-      - ./backend:/app
-      - backend-node-modules:/app/node_modules
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://127.0.0.1:4000/').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile.dev
+  #   restart: unless-stopped
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #     rustfs-bucket-init:
+  #       condition: service_completed_successfully
+  #   ports:
+  #     - "${BACKEND_PORT:-4000}:4000"
+  #   environment:
+  #     PORT: 4000
+  #     DATABASE_URL: postgresql://${POSTGRES_USER:-bookreview}:${POSTGRES_PASSWORD:-bookreviewpassword}@db:5432/${POSTGRES_DB:-bookreview}
+  #     ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+  #     OPENAI_API_KEY: ${OPENAI_API_KEY}
+  #     JWT_SECRET: ${JWT_SECRET}
+  #     JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+  #     REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+  #     CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000}
+  #     GLOBAL_RATE_LIMIT_MAX: ${GLOBAL_RATE_LIMIT_MAX:-100}
+  #     REVIEW_RATE_LIMIT_WINDOW_MS: ${REVIEW_RATE_LIMIT_WINDOW_MS:-900000}
+  #     REVIEW_RATE_LIMIT_MAX: ${REVIEW_RATE_LIMIT_MAX:-300}
+  #     AI_ENRICHMENT_CONCURRENCY: ${AI_ENRICHMENT_CONCURRENCY:-2}
+  #     AI_ENRICHMENT_SIMULATED_DELAY_MS: ${AI_ENRICHMENT_SIMULATED_DELAY_MS:-0}
+  #     ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME:-admin}
+  #     ADMIN_SEED_NAME: ${ADMIN_SEED_NAME:-Platform Admin}
+  #     ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin12345}
+  #     S3_ENDPOINT: ${S3_ENDPOINT:-http://rustfs:9000}
+  #     S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:9000}
+  #     S3_ACCESS_KEY: ${S3_ACCESS_KEY:-rustfsadmin}
+  #     S3_SECRET_KEY: ${S3_SECRET_KEY:-rustfsadmin}
+  #     S3_BUCKET: ${S3_BUCKET:-book-review}
+  #     S3_REGION: ${S3_REGION:-us-east-1}
+  #     S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
+  #     NODE_ENV: development
+  #     LOG_PRETTY: ${LOG_PRETTY}
+  #   volumes:
+  #     - ./backend:/app
+  #     - backend-node-modules:/app/node_modules
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "node",
+  #         "-e",
+  #         "fetch('http://127.0.0.1:4000/').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))",
+  #       ]
+  #     interval: 15s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 20s
 
   backend-worker:
     build:
@@ -199,6 +202,7 @@ services:
       REVIEW_RATE_LIMIT_WINDOW_MS: ${REVIEW_RATE_LIMIT_WINDOW_MS:-900000}
       REVIEW_RATE_LIMIT_MAX: ${REVIEW_RATE_LIMIT_MAX:-300}
       AI_ENRICHMENT_CONCURRENCY: ${AI_ENRICHMENT_CONCURRENCY:-2}
+      AI_ENRICHMENT_SIMULATED_DELAY_MS: ${AI_ENRICHMENT_SIMULATED_DELAY_MS:-0}
       ADMIN_SEED_USERNAME: ${ADMIN_SEED_USERNAME:-admin}
       ADMIN_SEED_NAME: ${ADMIN_SEED_NAME:-Platform Admin}
       ADMIN_SEED_PASSWORD: ${ADMIN_SEED_PASSWORD:-admin12345}
@@ -215,40 +219,40 @@ services:
       - ./backend:/app
       - backend-node-modules:/app/node_modules
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.dev
-    restart: unless-stopped
-    logging:
-      driver: json-file
-      options:
-        max-size: "10m"
-        max-file: "3"
-    depends_on:
-      backend:
-        condition: service_healthy
-    ports:
-      - "${FRONTEND_PORT:-3000}:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
-      NODE_ENV: development
-    volumes:
-      - ./frontend:/app
-      - frontend-node-modules:/app/node_modules
-      - frontend-next:/app/.next
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "node",
-          "-e",
-          "fetch('http://127.0.0.1:3000/').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))",
-        ]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-      start_period: 20s
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.dev
+  #   restart: unless-stopped
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: "10m"
+  #       max-file: "3"
+  #   depends_on:
+  #     backend:
+  #       condition: service_healthy
+  #   ports:
+  #     - "${FRONTEND_PORT:-3000}:3000"
+  #   environment:
+  #     NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
+  #     NODE_ENV: development
+  #   volumes:
+  #     - ./frontend:/app
+  #     - frontend-node-modules:/app/node_modules
+  #     - frontend-next:/app/.next
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "node",
+  #         "-e",
+  #         "fetch('http://127.0.0.1:3000/').then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))",
+  #       ]
+  #     interval: 15s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 20s
 
 volumes:
   postgres-data:
