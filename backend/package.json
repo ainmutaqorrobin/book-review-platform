@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --exec tsx src/server.ts",
+    "dev:docker": "nodemon --legacy-watch --exec tsx src/server.ts",
     "worker:dev": "nodemon --exec tsx src/worker.ts",
+    "worker:dev:docker": "nodemon --legacy-watch --exec tsx src/worker.ts",
     "build": "tsc && tsc-esm-fix dist",
     "start": "node dist/server.js",
     "worker": "node dist/worker.js",
