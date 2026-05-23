@@ -11,13 +11,21 @@ export const REVIEW_ENRICHMENT_QUEUE_NAME = "review-enrichment";
 let reviewEnrichmentQueue: Queue<ReviewEnrichmentJobData> | null = null;
 
 function createProducerRedisConnection(connectionName = "book-review-api") {
-  return new Redis(getRedisUrl(), {
+  const connection = new Redis(getRedisUrl(), {
     lazyConnect: true,
+    enableOfflineQueue: false,
     maxRetriesPerRequest: 1,
     connectTimeout: 5000,
     commandTimeout: 5000,
     connectionName,
+    retryStrategy: () => null,
   });
+
+  connection.on("error", () => {
+    // Callers surface queue failures in their own context.
+  });
+
+  return connection;
 }
 
 export function createWorkerRedisConnection() {
@@ -61,8 +69,18 @@ export async function closeReviewEnrichmentQueue() {
   await queue.close();
 }
 
+export async function disconnectReviewEnrichmentQueue() {
+  if (!reviewEnrichmentQueue) {
+    return;
+  }
+
+  const queue = reviewEnrichmentQueue;
+  reviewEnrichmentQueue = null;
+  await queue.disconnect();
+}
+
 export function getReviewEnrichmentJobId(reviewId: number) {
-  return `review-enrichment:${reviewId}`;
+  return `review-enrichment-${reviewId}`;
 }
 
 export async function enqueueReviewEnrichment(reviewId: number) {

@@ -1,7 +1,7 @@
 import type { JobType } from "bullmq";
 import {
   REVIEW_ENRICHMENT_QUEUE_NAME,
-  closeReviewEnrichmentQueue,
+  disconnectReviewEnrichmentQueue,
   getReviewEnrichmentQueue,
 } from "../queues/reviewEnrichment";
 
@@ -196,5 +196,5 @@ main()
     process.exitCode = 1;
   })
   .finally(async () => {
-    await closeReviewEnrichmentQueue();
+    await disconnectReviewEnrichmentQueue();
   });
