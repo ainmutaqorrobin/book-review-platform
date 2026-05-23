@@ -49,6 +49,7 @@ beforeEach(() => {
 
 describe("review enrichment worker logic", () => {
   it("marks a review as processing and then completed", async () => {
+    process.env.AI_ENRICHMENT_SIMULATED_DELAY_MS = "0";
     mockQuery
       .mockResolvedValueOnce({
         rows: [
@@ -84,6 +85,7 @@ describe("review enrichment worker logic", () => {
   });
 
   it("skips enrichment for reviews already completed", async () => {
+    process.env.AI_ENRICHMENT_SIMULATED_DELAY_MS = "0";
     mockQuery.mockResolvedValueOnce({
       rows: [
         {

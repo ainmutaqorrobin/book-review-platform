@@ -113,6 +113,12 @@ const ENV_DEFINITIONS: EnvDefinition[] = [
     defaultValue: "2",
   },
   {
+    name: "AI_ENRICHMENT_SIMULATED_DELAY_MS",
+    requirement: "optional",
+    description: "Artificial delay before AI review enrichment for queue testing",
+    defaultValue: "0",
+  },
+  {
     name: "LOG_LEVEL",
     requirement: "optional",
     description: "Structured logger level",
@@ -352,6 +358,10 @@ export function getReviewRateLimitMax() {
 
 export function getAiEnrichmentConcurrency() {
   return parseNumberEnv("AI_ENRICHMENT_CONCURRENCY", 2);
+}
+
+export function getAiEnrichmentSimulatedDelayMs() {
+  return parseNumberEnv("AI_ENRICHMENT_SIMULATED_DELAY_MS", 0);
 }
 
 export function getLogLevel() {

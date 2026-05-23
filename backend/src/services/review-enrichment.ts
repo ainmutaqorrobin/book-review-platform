@@ -11,6 +11,7 @@ import { enqueueReviewEnrichment } from "../queues/reviewEnrichment";
 import { NotFoundError } from "../utils/notfoundError";
 import { enrichReviewText } from "../mastra/agents/analyze-agent";
 import { logger } from "./logger";
+import { getAiEnrichmentSimulatedDelayMs } from "../config/env";
 
 const REVIEW_ENRICHMENT_ERROR_MAX_LENGTH = 500;
 
@@ -36,6 +37,30 @@ function getTruncatedErrorMessage(error: unknown) {
     error instanceof Error ? error.message : "Unknown AI enrichment error";
 
   return message.slice(0, REVIEW_ENRICHMENT_ERROR_MAX_LENGTH);
+}
+
+function wait(ms: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function waitForSimulatedEnrichmentDelay(reviewId: number) {
+  const delayMs = getAiEnrichmentSimulatedDelayMs();
+
+  if (delayMs <= 0) {
+    return;
+  }
+
+  logger.info(
+    {
+      reviewId,
+      delayMs,
+    },
+    "Simulating slow review enrichment",
+  );
+
+  await wait(delayMs);
 }
 
 async function assertBookExists(bookId: number) {
@@ -97,6 +122,7 @@ export async function processReviewEnrichmentJob(reviewId: number) {
   }
 
   await markReviewEnrichmentProcessing(reviewId);
+  await waitForSimulatedEnrichmentDelay(reviewId);
 
   const enrichment = await enrichReviewText(review.text);
 
