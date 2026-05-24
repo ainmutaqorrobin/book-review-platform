@@ -152,11 +152,8 @@ services:
         condition: service_completed_successfully
     ports:
       - "${BACKEND_PORT:-4000}:4000"
-    command: ["sh", "./scripts/dev-entrypoint.sh", "npm", "run", "dev:docker"]
+    command: ["npm", "run", "dev"]
     environment: *backend-environment
-    volumes:
-      - ./backend:/app
-      - backend-node-modules:/app/node_modules
     healthcheck:
       test:
         [
@@ -183,11 +180,8 @@ services:
         condition: service_healthy
       rustfs-bucket-init:
         condition: service_completed_successfully
-    command: ["sh", "./scripts/dev-entrypoint.sh", "npm", "run", "worker:dev:docker"]
+    command: ["npm", "run", "worker:dev"]
     environment: *backend-environment
-    volumes:
-      - ./backend:/app
-      - backend-node-modules:/app/node_modules
 
   frontend:
     build:
@@ -204,11 +198,6 @@ services:
       # Frontend runtime
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:4000}
       NODE_ENV: development
-      WATCHPACK_POLLING: "true"
-    volumes:
-      - ./frontend:/app
-      - frontend-node-modules:/app/node_modules
-      - frontend-next:/app/.next
     healthcheck:
       test:
         [
@@ -227,6 +216,3 @@ volumes:
   redis-data:
   rustfs-data:
   rustfs-logs:
-  backend-node-modules:
-  frontend-node-modules:
-  frontend-next:
