@@ -8,9 +8,7 @@ import {
 } from "../models/book";
 import { sendResponse } from "../utils/responseHelper";
 import { NotFoundError } from "../utils/notfoundError";
-import { createReview } from "../models/review";
 import pool from "../config/db";
-import { enrichReviewText } from "../mastra/agents/analyze-agent";
 import { AppError } from "../utils/appError";
 import { getPaginationQuery } from "../utils/pagination";
 import {
@@ -20,6 +18,7 @@ import {
   uploadBookCover,
 } from "../storage/bookCovers";
 import { logger } from "../services/logger";
+import { submitReviewForEnrichment } from "../services/review-enrichment";
 
 const BOOKS_DEFAULT_LIMIT = 9;
 
@@ -198,31 +197,14 @@ export const createBookReview = async (
   next: NextFunction,
 ) => {
   try {
-    const bookId = Number(req.params.bookId);
-    const { reviewer_name, text, rating } = req.body;
-
-    const book = await pool.query("SELECT id FROM books WHERE id = $1", [
-      bookId,
-    ]);
-
-    if (book.rowCount === 0) {
-      throw new NotFoundError(`Book with ID ${bookId} not found`);
-    }
-
-    const { sentimentScore, summary, tags } = await enrichReviewText(text);
-
-    // Create review with enriched data
-    const newReview = await createReview({
-      book_id: bookId,
-      reviewer_name,
-      text,
-      rating,
-      summary,
-      sentiment_score: sentimentScore,
-      tags,
+    const review = await submitReviewForEnrichment({
+      bookId: Number(req.params.bookId),
+      reviewer_name: req.body.reviewer_name,
+      text: req.body.text,
+      rating: req.body.rating,
     });
 
-    return sendResponse(res, 201, "Review added successfully", newReview);
+    return sendResponse(res, 201, "Review added successfully", review);
   } catch (err) {
     next(err);
   }

@@ -32,7 +32,14 @@ CREATE TABLE
         summary TEXT,
         sentiment_score REAL,
         tags JSONB,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ai_enrichment_status VARCHAR(20) NOT NULL DEFAULT 'pending',
+        ai_enrichment_error TEXT,
+        ai_enrichment_started_at TIMESTAMP,
+        ai_enrichment_completed_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        CONSTRAINT reviews_ai_enrichment_status_check CHECK (
+            ai_enrichment_status IN ('pending', 'processing', 'completed', 'failed')
+        )
     );
 
 -- indexes

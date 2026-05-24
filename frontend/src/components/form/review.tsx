@@ -16,14 +16,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import BackButton from "../common/back-button";
-import { createReview } from "@/utils/api/reviews";
+import { CreateReviewPayload, createReview } from "@/utils/api/reviews";
 import { useAuth } from "../providers/auth-provider";
-
-interface ReviewFormData {
-  reviewer_name: string;
-  text: string;
-  rating: number;
-}
 
 interface IProps {
   bookId: string;
@@ -38,7 +32,7 @@ export default function ReviewForm({ bookId }: IProps) {
   const router = useRouter();
   const { user } = useAuth();
 
-  const form = useForm<ReviewFormData>({
+  const form = useForm<CreateReviewPayload>({
     defaultValues: {
       reviewer_name: "",
       text: "",
@@ -56,7 +50,7 @@ export default function ReviewForm({ bookId }: IProps) {
     }
   }, [form, user?.name]);
 
-  const onSubmit = async (data: ReviewFormData) => {
+  const onSubmit = async (data: CreateReviewPayload) => {
     try {
       const response = await createReview(data, bookId);
 
@@ -71,7 +65,11 @@ export default function ReviewForm({ bookId }: IProps) {
         window.sessionStorage.setItem("refresh-book-detail", bookId);
       }
 
-      toast.success("Review submitted");
+      toast.success(
+        response.data?.ai_enrichment_status === "failed"
+          ? "Review submitted. AI summary unavailable right now."
+          : "Review submitted. AI summary pending.",
+      );
       router.replace(`/books/${bookId}`);
       router.refresh();
     } catch (error) {

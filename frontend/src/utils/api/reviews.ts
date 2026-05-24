@@ -6,6 +6,12 @@ export interface ReviewsQueryParams {
   limit?: number;
 }
 
+export interface CreateReviewPayload {
+  reviewer_name: string;
+  text: string;
+  rating: number;
+}
+
 export async function getReviews(
   bookId: number | string,
   params: ReviewsQueryParams = {},
@@ -19,7 +25,10 @@ export async function getReviews(
 }
 
 // Create review
-export async function createReview(review: Partial<Review>, bookId: string) {
+export async function createReview(
+  review: CreateReviewPayload,
+  bookId: string,
+) {
   return fetcher<Review>(`/reviews/${bookId}`, {
     method: "POST",
     data: review,

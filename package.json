@@ -2,6 +2,7 @@
   "name": "book-review-platform",
   "private": true,
   "scripts": {
+    "queue:status": "npm --prefix backend run queue:status --",
     "format": "prettier . --write --ignore-unknown",
     "format:check": "prettier . --check --ignore-unknown"
   },

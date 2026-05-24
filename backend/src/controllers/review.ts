@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
-import { getReviewsByBookId, createReview } from "../models/review";
+import { getReviewsByBookId } from "../models/review";
 import { sendResponse } from "../utils/responseHelper";
 import pool from "../config/db";
 import { NotFoundError } from "../utils/notfoundError";
-import { enrichReviewText } from "../mastra/agents/analyze-agent";
 import { getPaginationQuery } from "../utils/pagination";
+import { submitReviewForEnrichment } from "../services/review-enrichment";
 
 const REVIEWS_DEFAULT_LIMIT = 5;
 
@@ -41,29 +41,14 @@ export const createBookReview = async (
   next: NextFunction,
 ) => {
   try {
-    const bookId = Number(req.params.bookId);
-    const { reviewer_name, text, rating } = req.body;
-
-    const book = await pool.query("SELECT id FROM books WHERE id = $1", [
-      bookId,
-    ]);
-
-    if (book.rowCount === 0)
-      throw new NotFoundError(`Book with ID ${bookId} not found`);
-
-    const { sentimentScore, summary, tags } = await enrichReviewText(text);
-
-    const newReview = await createReview({
-      book_id: bookId,
-      reviewer_name,
-      text,
-      rating,
-      summary,
-      sentiment_score: sentimentScore,
-      tags,
+    const review = await submitReviewForEnrichment({
+      bookId: Number(req.params.bookId),
+      reviewer_name: req.body.reviewer_name,
+      text: req.body.text,
+      rating: req.body.rating,
     });
 
-    return sendResponse(res, 201, "Review added successfully", newReview);
+    return sendResponse(res, 201, "Review added successfully", review);
   } catch (err) {
     next(err);
   }

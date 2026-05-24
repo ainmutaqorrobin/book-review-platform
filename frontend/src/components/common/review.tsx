@@ -11,7 +11,18 @@ interface ReviewProps {
 }
 
 const Review: FC<ReviewProps> = ({ review }) => {
-  const { reviewer_name, text, rating, created_at, summary, tags } = review;
+  const {
+    reviewer_name,
+    text,
+    rating,
+    created_at,
+    summary,
+    tags,
+    ai_enrichment_status,
+  } = review;
+  const enrichmentStatus = ai_enrichment_status ?? "completed";
+  const isAiPending =
+    enrichmentStatus === "pending" || enrichmentStatus === "processing";
   const ratingToneClassName =
     rating <= 2
       ? "border-red-200/80 bg-red-50/85 text-red-700"
@@ -61,7 +72,47 @@ const Review: FC<ReviewProps> = ({ review }) => {
         </div>
       </div>
 
-      {summary && (
+      {isAiPending && (
+        <div className="mt-5 rounded-[1.4rem] border border-amber-200/90 bg-amber-50/90 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Badge
+              className="rounded-full border-amber-300 bg-white/80 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-amber-800"
+              variant="outline"
+            >
+              {enrichmentStatus === "processing"
+                ? "AI Processing"
+                : "AI Pending"}
+            </Badge>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-amber-700">
+              AI summary pending
+            </p>
+          </div>
+          <p className="mt-3 text-sm leading-7 text-amber-900">
+            We&apos;re generating the summary and tags for this review.
+          </p>
+        </div>
+      )}
+
+      {enrichmentStatus === "failed" && (
+        <div className="mt-5 rounded-[1.4rem] border border-red-200/90 bg-red-50/90 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Badge
+              className="rounded-full border-red-300 bg-white/80 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-red-700"
+              variant="outline"
+            >
+              AI Unavailable
+            </Badge>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-red-700">
+              Review saved
+            </p>
+          </div>
+          <p className="mt-3 text-sm leading-7 text-red-800">
+            Your review was saved, but the AI summary could not be generated.
+          </p>
+        </div>
+      )}
+
+      {enrichmentStatus === "completed" && summary && (
         <div className="mt-5 rounded-[1.4rem] border border-stone-900/8 bg-[#f6eee1]/90 p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
           <div className="space-y-3">
             <div className="flex justify-end">
@@ -83,7 +134,7 @@ const Review: FC<ReviewProps> = ({ review }) => {
         <p className="mt-3 text-sm leading-7 text-stone-700">{text}</p>
       </div>
 
-      {tags && tags.length > 0 && (
+      {enrichmentStatus === "completed" && tags && tags.length > 0 && (
         <div className="mt-5 flex flex-wrap gap-2.5">
           {tags.map((tag, index) => (
             <Badge

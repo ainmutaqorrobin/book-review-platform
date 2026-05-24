@@ -24,4 +24,8 @@ if [ ! -d "node_modules" ] || [ "$CURRENT_HASH" != "$SAVED_HASH" ]; then
   printf "%s" "$CURRENT_HASH" > "$STAMP_FILE"
 fi
 
+if [ "$#" -gt 0 ]; then
+  exec "$@"
+fi
+
 exec npm run dev
