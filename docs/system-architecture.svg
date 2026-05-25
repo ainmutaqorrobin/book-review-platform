@@ -75,8 +75,8 @@
 
   <path d="M570 422 C520 470 355 520 280 570" stroke="#ea580c" stroke-width="2.4" fill="none" marker-end="url(#arrow-orange)" />
   <path d="M600 422 V565" stroke="#ea580c" stroke-width="2.4" marker-end="url(#arrow-orange)" />
-  <path d="M650 422 C725 480 865 515 925 570" stroke="#ea580c" stroke-width="2.4" fill="none" marker-end="url(#arrow-orange)" />
-  <path d="M915 422 C830 485 715 520 630 570" stroke="#ea580c" stroke-width="2.4" fill="none" marker-end="url(#arrow-orange)" />
+  <path d="M695 400 C790 430 915 505 950 570" stroke="#ea580c" stroke-width="2.4" fill="none" marker-end="url(#arrow-orange)" />
+  <path d="M855 382 H740 C665 382 610 490 605 570" stroke="#ea580c" stroke-width="2.4" fill="none" marker-end="url(#arrow-orange)" />
   <path d="M885 422 C750 510 430 530 300 570" stroke="#ea580c" stroke-width="2.4" fill="none" marker-end="url(#arrow-orange)" />
   <path d="M950 422 V715" stroke="#9333ea" stroke-width="2.4" marker-end="url(#arrow-purple)" />
 
@@ -89,9 +89,9 @@
     <text x="541" y="503" text-anchor="middle" fill="#9a3412">read/write</text>
     <rect x="611" y="486" width="86" height="24" rx="12" fill="#f8fafc" />
     <text x="654" y="503" text-anchor="middle" fill="#9a3412">enqueue job</text>
-    <rect x="780" y="496" width="92" height="24" rx="12" fill="#f8fafc" />
-    <text x="826" y="513" text-anchor="middle" fill="#9a3412">cover upload</text>
-    <rect x="722" y="512" width="92" height="24" rx="12" fill="#f8fafc" />
-    <text x="768" y="529" text-anchor="middle" fill="#9a3412">consume job</text>
+    <rect x="805" y="468" width="92" height="24" rx="12" fill="#f8fafc" />
+    <text x="851" y="485" text-anchor="middle" fill="#9a3412">cover upload</text>
+    <rect x="662" y="395" width="92" height="24" rx="12" fill="#f8fafc" />
+    <text x="708" y="412" text-anchor="middle" fill="#9a3412">consume job</text>
   </g>
 </svg>
