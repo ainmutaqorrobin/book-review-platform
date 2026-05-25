@@ -16,31 +16,36 @@ The app is designed around a responsive submission flow: reviews are saved immed
 ## System Architecture
 
 ```mermaid
-flowchart LR
-  Browser[Browser / Next.js UI]
-  API[Express API]
-  DB[(PostgreSQL)]
-  Redis[(Redis)]
-  Worker[Backend Worker]
+flowchart TB
+  User[User Browser]
+  Edge[Nginx Reverse Proxy]
+
+  subgraph App["Application Layer"]
+    Frontend[Next.js Frontend]
+    API[Express API]
+    Worker[Backend Worker]
+  end
+
+  subgraph Data["Data and Infrastructure"]
+    DB[(PostgreSQL)]
+    Redis[(Redis / BullMQ)]
+    Storage[(RustFS / S3)]
+  end
+
   AI[Mastra AI Provider]
-  S3[(RustFS / S3 Storage)]
-  Nginx[Nginx / VPS Reverse Proxy]
 
-  Browser -->|HTTPS /api| Nginx
-  Nginx -->|frontend routes| Browser
-  Nginx -->|API proxy| API
+  User --> Edge
+  Edge --> Frontend
+  Edge --> API
 
-  Browser -->|book cover upload| API
-  API -->|metadata + reviews| DB
-  API -->|cover objects| S3
-  API -->|enqueue review-enrichment job| Redis
+  Frontend -->|REST API calls| API
+  API -->|read/write app data| DB
+  API -->|store book covers| Storage
+  API -->|enqueue AI enrichment jobs| Redis
 
-  Worker -->|consume BullMQ jobs| Redis
-  Worker -->|load/update review| DB
-  Worker -->|generate summary, sentiment, tags| AI
-  Worker -->|persist enrichment result| DB
-
-  Browser -->|poll pending review state| API
+  Worker -->|consume jobs| Redis
+  Worker -->|read/write enrichment state| DB
+  Worker -->|generate AI output| AI
 ```
 
 ## Review Enrichment Flow
