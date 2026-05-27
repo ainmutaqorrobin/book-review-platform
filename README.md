@@ -48,14 +48,61 @@ If Redis enqueueing fails after the review is saved, the review is preserved and
 - `backend/src/queues/`: Redis/BullMQ queue setup.
 - `backend/src/worker.ts`: background worker entrypoint.
 - `backend/db/schema.sql`: base database schema.
-- `docker-compose.yml`: full local Docker stack for onboarding/evaluation.
-- `docker-compose.infra.yml`: dependency-only stack for maintainers.
+- `docker-compose.yml`: local development stack with Compose Watch support.
 - `docker-compose.production.yml`: image-only VPS runtime stack.
 
-## Development Docs
+## Local Development
 
-- Maintainers editing code day to day: [docs/maintainer-development.md](docs/maintainer-development.md)
-- Developers who want to run all services locally with Docker: [docs/local-docker-setup.md](docs/local-docker-setup.md)
+1. Copy the local environment file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Fill required secrets in `.env`:
+
+   ```text
+   OPENAI_API_KEY=...
+   ANTHROPIC_API_KEY=...
+   JWT_SECRET=...
+   JWT_EXPIRES_IN=86400000
+   ```
+
+3. Start the full local stack:
+
+   ```bash
+   docker compose up --watch
+   ```
+
+Compose Watch behavior:
+
+- Source changes in `backend/` and `frontend/` sync into the running containers.
+- `package.json`, lockfiles, and `Dockerfile.dev` changes rebuild the affected service.
+- `next.config.ts`, `postcss.config.mjs`, `tsconfig.json`, and backend test/runtime config files sync and restart the affected service.
+- Stop the current session and run `docker compose up --watch` again after changing the root `.env` file or `docker-compose.yml`.
+
+Useful commands:
+
+```bash
+docker compose exec backend npm run seed
+docker compose exec backend npm run env:check
+npm run queue:status
+docker compose down
+```
+
+Local URLs:
+
+- Frontend: `http://localhost:3000`
+- Backend API: `http://localhost:4000`
+- Database health check: `http://localhost:4000/database`
+- RustFS S3 endpoint: `http://localhost:9000`
+- RustFS console: `http://localhost:9001`
+
+Notes:
+
+- Keep using the root `.env` file for local secrets and ports.
+- Inside containers, service-to-service traffic uses Docker service names such as `db`, `redis`, and `rustfs`.
+- If you change `backend/db/schema.sql` and need a clean bootstrap, remove the Postgres volume and recreate the stack.
 
 ## Production Deployment
 
